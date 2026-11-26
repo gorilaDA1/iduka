@@ -1,0 +1,2534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Iduka</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg?v=7">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png?v=7">
+  <link rel="apple-touch-icon" href="favicon.png?v=7">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #1f7a3a;
+      --primary-dark: #14532d;
+      --primary-light: #22c55e;
+      --accent-yellow: #facc15;
+      --accent-orange: #f97316;
+      --accent-orange-dark: #ea580c;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: rgba(15, 23, 42, 0.08);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.7);
+      --shadow-soft: 0 10px 30px -10px rgba(15, 23, 42, 0.12), 0 4px 10px -4px rgba(15, 23, 42, 0.06);
+      --shadow-hover: 0 18px 36px -12px rgba(15, 23, 42, 0.18), 0 8px 16px -6px rgba(15, 23, 42, 0.08);
+    }
+
+    html {
+      background: linear-gradient(to bottom, #bfe6f8, #d9f7e6);
+      min-height: 100%;
+      scroll-behavior: smooth;
+    }
+
+    @supports not selector(::-webkit-scrollbar) {
+      html { scrollbar-width: thin; scrollbar-color: #1f7a3a transparent; }
+    }
+
+    /* Custom Scrollbar (Always Green) */
+    ::-webkit-scrollbar { width: 10px; height: 10px; background: transparent; }
+    ::-webkit-scrollbar-track { background: transparent; border-radius: 999px; }
+    ::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+    ::-webkit-scrollbar-corner { background: transparent; }
+    ::-webkit-scrollbar-thumb, ::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active { background: #1f7a3a; border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+
+    .sidebar::-webkit-scrollbar,
+    .nav-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, #bae6fd 0%, #dcfce7 55%, #ecfdf5 100%);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    h1, h2, h3, .font-heading {
+      font-family: "Poppins", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #e0f2fe 0%, #dcfce7 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      z-index: 100;
+      transition: opacity 0.45s ease, visibility 0.45s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-logo {
+      width: 84px;
+      height: 84px;
+      object-fit: contain;
+      border-radius: 1.25rem;
+      box-shadow: var(--shadow-soft);
+      animation: logoPulse 1.2s ease-in-out infinite;
+    }
+
+    .loading-text {
+      font-family: "Poppins", sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: var(--primary-dark);
+      letter-spacing: -0.02em;
+    }
+
+    @keyframes logoPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+
+    /* Background Illustrated Scenery */
+    .bg-scenery {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-clouds {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 220px;
+      opacity: 0.75;
+    }
+
+    .cloud-drift-1 {
+      animation: cloudDrift 48s linear infinite;
+    }
+
+    .cloud-drift-2 {
+      animation: cloudDrift 68s linear infinite reverse;
+    }
+
+    @keyframes cloudDrift {
+      0% { transform: translateX(-8%); }
+      50% { transform: translateX(8%); }
+      100% { transform: translateX(-8%); }
+    }
+
+    .bg-hills {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 240px;
+      opacity: 0.85;
+    }
+
+    .bg-watermark {
+      position: fixed;
+      right: 1rem;
+      bottom: 4.75rem;
+      width: 40px;
+      height: 40px;
+      opacity: 0.6;
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 0.65rem;
+      object-fit: contain;
+    }
+
+    @media (min-width: 768px) {
+      .bg-watermark {
+        bottom: 1rem;
+      }
+    }
+
+    /* App Shell */
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* Desktop Sidebar */
+    .sidebar {
+      display: none;
+      width: 256px;
+      background: linear-gradient(180deg, #1f7a3a 0%, #155e2c 60%, #114722 100%);
+      color: #ffffff;
+      padding: 1.25rem 1rem;
+      flex-direction: column;
+      flex-shrink: 0;
+      box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.75rem;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .sidebar-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      border-radius: 0.65rem;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .sidebar-title {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-list {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      flex: 1;
+    }
+
+    .sidebar-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 44px;
+      border-radius: 0.85rem;
+      background: linear-gradient(135deg, #facc15 0%, #fde047 100%);
+      box-shadow: 0 6px 16px rgba(250, 204, 21, 0.35);
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), height 0.28s ease;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .nav-btn {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.95rem;
+      border-radius: 0.85rem;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: left;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s, background-color 0.2s, transform 0.2s;
+    }
+
+    .nav-btn svg {
+      transition: transform 0.2s, filter 0.2s;
+    }
+
+    .nav-btn:hover:not(.active) {
+      background-color: rgba(255, 255, 255, 0.12);
+      color: #ffffff;
+    }
+
+    .nav-btn:hover svg {
+      filter: drop-shadow(0 0 6px rgba(250, 204, 21, 0.65));
+      transform: scale(1.08);
+    }
+
+    .nav-btn.active {
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .lang-btn {
+      margin-top: auto;
+      padding: 0.7rem 1rem;
+      background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+      color: #111827;
+      font-weight: 700;
+      border-radius: 9999px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .lang-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+    }
+
+    .lang-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Mobile Header & Bottom Nav */
+    .mobile-header {
+      position: relative;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(90deg, #1f7a3a 0%, #155e2c 100%);
+      color: #ffffff;
+      padding: 0.75rem 1rem;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+    }
+
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .mobile-logo {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 2px;
+    }
+
+    .mobile-header h1 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .mobile-lang-btn {
+      padding: 0.4rem 0.85rem;
+      background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+      color: #111827;
+      font-weight: 700;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(90deg, #1f7a3a 0%, #14532d 100%);
+      color: #ffffff;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.45rem 0.25rem;
+      z-index: 40;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.15);
+    }
+
+    .bottom-nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.2rem;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.68rem;
+      min-width: 48px;
+      min-height: 46px;
+      padding: 0.3rem 0.4rem;
+      border-radius: 0.65rem;
+      transition: color 0.2s, background-color 0.2s;
+    }
+
+    .bottom-nav-btn.active {
+      color: var(--accent-yellow);
+      background: rgba(255, 255, 255, 0.12);
+      font-weight: 700;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 1.25rem;
+      padding-bottom: 5.5rem;
+      max-width: 1140px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (min-width: 768px) {
+      .sidebar {
+        display: flex;
+      }
+      .mobile-header, .bottom-nav {
+        display: none;
+      }
+      .main-content {
+        padding: 2rem 2.25rem;
+        padding-bottom: 2.5rem;
+      }
+    }
+
+    .page-enter {
+      animation: pageEnter 0.3s ease-out both;
+    }
+
+    @keyframes pageEnter {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    h2.page-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      margin-bottom: 1.15rem;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+    }
+
+    /* Glass Cards */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-soft);
+      transition: transform 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .card-hover:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    /* Hero Section */
+    .hero-card {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      align-items: center;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(240, 253, 244, 0.88) 100%);
+      border: 1px solid rgba(255, 255, 255, 0.85);
+      border-radius: 1.25rem;
+      box-shadow: var(--shadow-soft);
+      overflow: hidden;
+      position: relative;
+    }
+
+    @media (min-width: 900px) {
+      .hero-card {
+        grid-template-columns: 1.15fr 0.85fr;
+        padding: 2rem 2.25rem;
+      }
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(31, 122, 58, 0.1);
+      color: var(--primary-dark);
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.85rem;
+    }
+
+    .hero-badge img {
+      width: 22px;
+      height: 22px;
+      border-radius: 0.35rem;
+      object-fit: contain;
+    }
+
+    .hero-title {
+      font-size: clamp(1.75rem, 3.5vw, 2.45rem);
+      font-weight: 800;
+      line-height: 1.15;
+      color: #0f172a;
+      margin-bottom: 0.65rem;
+      letter-spacing: -0.03em;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      line-height: 1.55;
+      margin-bottom: 1.35rem;
+      max-width: 480px;
+    }
+
+    .hero-illustration {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .shopkeeper-stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0.25rem 1.25rem;
+      animation: kioskEnter 0.65s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      cursor: pointer;
+    }
+
+    .shopkeeper-float {
+      display: flex;
+      justify-content: center;
+      will-change: transform;
+      animation: kioskFloat 4s ease-in-out infinite;
+    }
+
+    .shopkeeper-img {
+      display: block;
+      max-height: 160px;
+      width: auto;
+      object-fit: contain;
+      transform-origin: bottom center;
+      will-change: transform;
+      animation: kioskSway 5s ease-in-out infinite;
+      transition: transform 0.25s ease;
+    }
+
+    @media (min-width: 768px) {
+      .shopkeeper-img {
+        max-height: 220px;
+        width: auto;
+      }
+    }
+
+    .shopkeeper-stage:hover .shopkeeper-img {
+      animation: kioskWiggle 0.6s ease-in-out forwards;
+    }
+
+    .kiosk-shadow {
+      width: 55%;
+      height: 11px;
+      margin-top: -5px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0.22) 0%, rgba(15, 23, 42, 0) 72%);
+      will-change: transform, opacity;
+      animation: shadowScale 4s ease-in-out infinite;
+    }
+
+    @keyframes kioskEnter {
+      0% { opacity: 0; transform: translate3d(0, 26px, 0) scale(0.95); }
+      70% { opacity: 1; transform: translate3d(0, -4px, 0) scale(1.01); }
+      100% { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+    }
+
+    @keyframes kioskFloat {
+      0%, 100% { transform: translate3d(0, 0, 0); }
+      50% { transform: translate3d(0, -5px, 0); }
+    }
+
+    @keyframes kioskSway {
+      0%, 100% { transform: rotate(-1deg); }
+      50% { transform: rotate(1deg); }
+    }
+
+    @keyframes kioskWiggle {
+      0% { transform: scale(1.03) rotate(0deg); }
+      25% { transform: scale(1.03) rotate(-2deg); }
+      65% { transform: scale(1.03) rotate(2deg); }
+      100% { transform: scale(1.03) rotate(0deg); }
+    }
+
+    @keyframes shadowScale {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(0.86); opacity: 0.6; }
+    }
+
+    /* Floating Gold Coins & Twinkling Sparkles */
+    .hero-coin {
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      background: radial-gradient(circle at 32% 32%, #fef08a 0%, #facc15 55%, #ca8a04 100%);
+      border: 2px solid #a16207;
+      box-shadow: 0 3px 8px rgba(161, 98, 7, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8px;
+      font-weight: 800;
+      color: #713f12;
+      pointer-events: none;
+      will-change: transform;
+      animation: coinFloat var(--dur, 3.6s) ease-in-out var(--delay, 0s) infinite;
+    }
+
+    .hero-coin::after {
+      content: "Fr";
+    }
+
+    @keyframes coinFloat {
+      0%, 100% { transform: translate3d(0, 0, 0) rotate(-6deg); }
+      50% { transform: translate3d(0, -10px, 0) rotate(6deg); }
+    }
+
+    .hero-sparkle {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      pointer-events: none;
+      will-change: transform, opacity;
+      animation: sparkleTwinkle var(--dur, 2.4s) ease-in-out var(--delay, 0s) infinite;
+    }
+
+    @keyframes sparkleTwinkle {
+      0%, 100% { transform: scale(0.6) rotate(0deg); opacity: 0.35; }
+      50% { transform: scale(1.25) rotate(20deg); opacity: 1; }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes swayLeaf {
+      0%, 100% { transform: rotate(-2deg); }
+      50% { transform: rotate(3deg); }
+    }
+
+    /* Grids */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    @media (max-width: 520px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .grid-sales {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid-sales {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .stat-card {
+      opacity: 0;
+      animation: staggerIn 0.4s ease-out forwards;
+    }
+
+    .stat-card:nth-child(1) { animation-delay: 0.04s; }
+    .stat-card:nth-child(2) { animation-delay: 0.1s; }
+    .stat-card:nth-child(3) { animation-delay: 0.16s; }
+    .stat-card:nth-child(4) { animation-delay: 0.22s; }
+    .stat-card:nth-child(5) { animation-delay: 0.28s; }
+    .stat-card:nth-child(6) { animation-delay: 0.34s; }
+
+    @keyframes staggerIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stat-label {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-value {
+      font-family: "Poppins", sans-serif;
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* Pill Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      padding: 0.65rem 1.35rem;
+      border-radius: 9999px;
+      font-weight: 600;
+      font-size: 0.94rem;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -6px rgba(15, 23, 42, 0.22);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #1f7a3a 0%, #16a34a 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 16px -4px rgba(31, 122, 58, 0.45);
+    }
+
+    .btn-orange {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #ffffff;
+      box-shadow: 0 8px 20px -4px rgba(249, 115, 22, 0.5);
+    }
+
+    .btn-yellow {
+      background: linear-gradient(135deg, #facc15 0%, #eab308 100%);
+      color: #111827;
+      box-shadow: 0 6px 16px -4px rgba(234, 179, 8, 0.4);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: #ffffff;
+      box-shadow: 0 6px 16px -4px rgba(220, 38, 38, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.85);
+      color: #1e293b;
+      border: 1px solid rgba(15, 23, 42, 0.1);
+    }
+
+    .btn-lg {
+      padding: 0.85rem 1.75rem;
+      font-size: 1.02rem;
+    }
+
+    .btn-pop {
+      animation: btnPop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes btnPop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.22); }
+      100% { transform: scale(1); }
+    }
+
+    /* Alert */
+    .alert-warning {
+      background: rgba(254, 249, 195, 0.92);
+      backdrop-filter: blur(8px);
+      border-left: 5px solid #eab308;
+      padding: 1rem 1.25rem;
+      border-radius: 1rem;
+      margin-top: 1.25rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .alert-warning ul {
+      margin-top: 0.45rem;
+      padding-left: 1.25rem;
+      color: #713f12;
+    }
+
+    /* Toolbar & Inputs */
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.15rem;
+    }
+
+    .input, .select {
+      border: 1px solid rgba(15, 23, 42, 0.14);
+      border-radius: 0.75rem;
+      padding: 0.55rem 0.85rem;
+      background: rgba(255, 255, 255, 0.95);
+      color: var(--text-main);
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+
+    .input:focus, .select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(31, 122, 58, 0.15);
+    }
+
+    .input-full {
+      width: 100%;
+    }
+
+    /* Tables */
+    .table-wrap {
+      overflow-x: auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 1rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: linear-gradient(90deg, #1f7a3a 0%, #15803d 100%);
+      color: #ffffff;
+    }
+
+    th, td {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: rgba(240, 253, 244, 0.45);
+    }
+
+    tbody tr:hover {
+      background-color: rgba(220, 252, 231, 0.65);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    th.center, td.center {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.74rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      margin-left: 0.4rem;
+      font-weight: 600;
+    }
+
+    .badge-low {
+      background-color: #fef08a;
+      color: #854d0e;
+    }
+
+    .badge-out {
+      background-color: #fecaca;
+      color: #991b1b;
+    }
+
+    .icon-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 0.6rem;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      transition: transform 0.15s, background-color 0.15s;
+      margin: 0 0.15rem;
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .icon-btn-blue { color: #2563eb; }
+    .icon-btn-blue:hover { background: #eff6ff; }
+    .icon-btn-red { color: #dc2626; }
+    .icon-btn-red:hover { background: #fef2f2; }
+    .icon-btn-green {
+      width: auto;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      color: #15803d;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+    .icon-btn-green:hover { background: #dcfce7; }
+
+    .scroll-box {
+      max-height: 23rem;
+      overflow-y: auto;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14px, #000 calc(100% - 14px), transparent 100%);
+      mask-image: linear-gradient(to bottom, transparent 0%, #000 14px, #000 calc(100% - 14px), transparent 100%);
+    }
+
+    .row-between {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid rgba(15, 23, 42, 0.06);
+      gap: 0.5rem;
+    }
+
+    .row-between:last-child {
+      border-bottom: none;
+    }
+
+    .cart-item-enter {
+      animation: slideInCart 0.25s ease-out;
+    }
+
+    @keyframes slideInCart {
+      from {
+        opacity: 0;
+        transform: translateX(14px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .total-pop {
+      display: inline-block;
+      animation: totalPop 0.28s ease-out;
+    }
+
+    @keyframes totalPop {
+      0% { transform: scale(1); color: #0f172a; }
+      50% { transform: scale(1.1); color: var(--primary); }
+      100% { transform: scale(1); color: #0f172a; }
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.15rem;
+      flex-wrap: wrap;
+    }
+
+    /* Empty State */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem 1rem;
+      gap: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      padding: 1rem;
+      animation: fadeBackdrop 0.2s ease-out;
+    }
+
+    .modal-box {
+      background: #ffffff;
+      border-radius: 1.25rem;
+      width: 100%;
+      max-width: 440px;
+      padding: 1.5rem;
+      box-shadow: 0 24px 48px -12px rgba(15, 23, 42, 0.28);
+      animation: modalScaleIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes fadeBackdrop {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes modalScaleIn {
+      from {
+        opacity: 0;
+        transform: scale(0.94) translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.15rem;
+    }
+
+    .modal-header h3 {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      background: #f1f5f9;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 9999px;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Toast (Top-Right Slide In) */
+    .toast {
+      position: fixed;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 0.75rem 1.15rem;
+      border-radius: 0.9rem;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.25);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      z-index: 70;
+      border-left: 4px solid var(--accent-yellow);
+      animation: toastSlideIn 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes toastSlideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    /* Sale Success Confetti Overlay */
+    .success-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 80;
+      animation: fadeBackdrop 0.2s ease-out;
+    }
+
+    .success-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 1.5rem;
+      padding: 2rem 2.5rem;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(15, 23, 42, 0.25);
+      animation: modalScaleIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .success-check {
+      width: 68px;
+      height: 68px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      box-shadow: 0 10px 24px rgba(34, 197, 94, 0.4);
+    }
+
+    .confetti-piece {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 2px;
+      animation: confettiBurst 0.9s ease-out forwards;
+    }
+
+    @keyframes confettiBurst {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.5);
+      }
+    }
+
+    /* Chart */
+    .chart-container {
+      position: relative;
+      width: 100%;
+      overflow-x: auto;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-soft);
+    }
+
+    .chart-bar-rect {
+      transform-box: fill-box;
+      transform-origin: bottom center;
+      animation: growBar 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+      transition: fill 0.15s;
+    }
+
+    .chart-bar:hover .chart-bar-rect {
+      fill: #f97316;
+    }
+
+    @keyframes growBar {
+      from { transform: scaleY(0); }
+      to { transform: scaleY(1); }
+    }
+
+    .chart-tooltip {
+      position: fixed;
+      background: rgba(15, 23, 42, 0.92);
+      color: #ffffff;
+      padding: 0.4rem 0.7rem;
+      border-radius: 0.5rem;
+      font-size: 0.82rem;
+      font-weight: 500;
+      pointer-events: none;
+      z-index: 90;
+      display: none;
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-top: 1.35rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .text-red { color: #dc2626; }
+
+    /* Respect Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+      .scroll-box {
+        -webkit-mask-image: none;
+        mask-image: none;
+      }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <img src="logo.png" alt="Iduka Logo" class="loading-logo" />
+    <div class="loading-text">Iduka – Shop Manager</div>
+  </div>
+
+  <!-- Fixed Sky-to-Hills Background Illustration -->
+  <div class="bg-scenery" aria-hidden="true">
+    <svg class="bg-clouds" viewBox="0 0 1440 220" preserveAspectRatio="none">
+      <g class="cloud-drift-1" fill="rgba(255,255,255,0.72)">
+        <ellipse cx="180" cy="70" rx="75" ry="26" />
+        <ellipse cx="220" cy="60" rx="50" ry="30" />
+        <ellipse cx="145" cy="75" rx="45" ry="20" />
+        <ellipse cx="980" cy="55" rx="80" ry="24" />
+        <ellipse cx="1025" cy="45" rx="52" ry="28" />
+      </g>
+      <g class="cloud-drift-2" fill="rgba(255,255,255,0.55)">
+        <ellipse cx="580" cy="95" rx="68" ry="22" />
+        <ellipse cx="620" cy="84" rx="44" ry="25" />
+        <ellipse cx="1280" cy="90" rx="65" ry="20" />
+      </g>
+    </svg>
+    <svg class="bg-hills" viewBox="0 0 1440 240" preserveAspectRatio="none">
+      <path d="M0,165 C240,95 480,200 760,145 C1020,95 1240,175 1440,125 L1440,240 L0,240 Z" fill="rgba(134, 239, 172, 0.45)" />
+      <path d="M0,195 C320,140 580,220 920,175 C1160,145 1320,195 1440,170 L1440,240 L0,240 Z" fill="rgba(74, 222, 128, 0.32)" />
+    </svg>
+  </div>
+  <img src="logo.png" alt="" class="bg-watermark" aria-hidden="true" />
+
+  <div id="app"></div>
+  <div id="chart-tooltip" class="chart-tooltip"></div>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // Dismiss loading screen smoothly
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          const loader = document.getElementById("loading-screen");
+          if (loader) loader.classList.add("hidden");
+        }, 450);
+      });
+
+      // ----- Translations -----
+      const translations = {
+        en: {
+          home: "Home",
+          sales: "Sales",
+          products: "Products",
+          debts: "Debts",
+          expenses: "Expenses",
+          reports: "Reports",
+          settings: "Settings",
+          heroBadge: "Rwandan Shop Companion",
+          heroTitle: "Run your shop <span>smarter.</span>",
+          heroSubtitle: "Track daily sales, stock levels, customer debts, and profits in seconds — simple, fast, and ready for your business.",
+          recordSale: "Record a sale",
+          todaySales: "Today's Sales",
+          todayExpenses: "Today's Expenses",
+          todayProfit: "Today's Profit",
+          lowStockAlert: "Low-stock alert",
+          totalOwed: "Total owed",
+          addProduct: "Add Product",
+          editProduct: "Edit Product",
+          deleteProduct: "Delete Product",
+          name: "Name",
+          search: "Search...",
+          lowStockBadge: "Low stock",
+          outOfStockBadge: "Out of stock",
+          paymentMethod: "Payment method",
+          cash: "Cash",
+          momo: "MoMo",
+          credit: "Credit",
+          customerName: "Customer name",
+          customerPhone: "Phone (optional)",
+          confirmDelete: "Are you sure you want to delete?",
+          category: "Category",
+          date: "Date",
+          exportData: "Export data",
+          importData: "Import data",
+          loadSample: "Load sample data",
+          clearData: "Clear all data",
+          language: "Language",
+          profit: "Profit",
+          totalSales: "Total sales",
+          totalExpenses: "Total expenses",
+          topProducts: "Top 5 products",
+          salesPerHour: "Sales per hour",
+          salesPerDay: "Sales per day",
+          price: "Price",
+          stock: "Stock",
+          actions: "Actions",
+          save: "Save",
+          chooseProducts: "Choose Products",
+          selected: "Selected",
+          noProductsSelected: "No products selected",
+          total: "Total",
+          saleSaved: "Sale saved!",
+          saveSale: "Save Sale",
+          customer: "Customer",
+          phone: "Phone",
+          owed: "Owed",
+          repay: "Repay",
+          recordRepayment: "Record Repayment",
+          amount: "Amount",
+          repaymentRecorded: "Repayment recorded",
+          description: "Description",
+          addExpense: "Add Expense",
+          editExpense: "Edit Expense",
+          invalidInput: "Invalid input",
+          expenseSaved: "Expense saved",
+          expenseDeleted: "Expense deleted",
+          today: "Today",
+          last7Days: "Last 7 days",
+          thisMonth: "This month",
+          anonymous: "Anonymous",
+          exportSuccess: "Data exported",
+          importSuccess: "Data imported successfully",
+          importError: "Import failed: invalid file",
+          noDebts: "No debts recorded yet.",
+          noExpenses: "No expenses recorded yet.",
+          noProducts: "No products found.",
+          noSalesYet: "No sales in this period."
+        },
+        rw: {
+          home: "Ahabanza",
+          sales: "Kugurisha",
+          products: "Ibicuruzwa",
+          debts: "Imyenda",
+          expenses: "Amafaranga yasohotse",
+          reports: "Raporo",
+          settings: "Igenamiterere",
+          heroBadge: "Umufasha w'Iduka",
+          heroTitle: "Cunga iduka ryawe <span>neza.</span>",
+          heroSubtitle: "Kurikirana ibyagurishijwe buri munsi, ububiko, imyenda y'abakiriya, n'inyungu mu buryo bworoshye kandi bwihuse.",
+          recordSale: "Andika igurisha",
+          todaySales: "Ibyagurishijwe uyu munsi",
+          todayExpenses: "Amafaranga yasohotse uyu munsi",
+          todayProfit: "Inyungu y'uyu munsi",
+          lowStockAlert: "Ibicuruzwa bishira",
+          totalOwed: "Imyenda yose",
+          addProduct: "Ongeramo igicuruzwa",
+          editProduct: "Hindura igicuruzwa",
+          deleteProduct: "Siba igicuruzwa",
+          name: "Izina",
+          search: "Shakisha...",
+          lowStockBadge: "Bike",
+          outOfStockBadge: "Byashize",
+          paymentMethod: "Uburyo bwo kwishyura",
+          cash: "Amafaranga",
+          momo: "MoMo",
+          credit: "Umwenda",
+          customerName: "Izina ry'umukiriya",
+          customerPhone: "Telefoni (ahitamo)",
+          confirmDelete: "Ese koko ushaka gusiba?",
+          category: "Icyiciro",
+          date: "Itariki",
+          exportData: "Ohereza amakuru",
+          importData: "Kuzana amakuru",
+          loadSample: "Shyiramo ibicuruzwa by'icyitegererezo",
+          clearData: "Siba byose",
+          language: "Ururimi",
+          profit: "Inyungu",
+          totalSales: "Ibyagurishijwe byose",
+          totalExpenses: "Amafaranga yakoreshejwe",
+          topProducts: "Ibicuruzwa 5 byagurishijwe cyane",
+          salesPerHour: "Ibyagurishijwe ku isaha",
+          salesPerDay: "Ibyagurishijwe ku munsi",
+          price: "Igiciro",
+          stock: "Ububiko",
+          actions: "Ibikorwa",
+          save: "Bika",
+          chooseProducts: "Hitamo ibicuruzwa",
+          selected: "Byahiswemo",
+          noProductsSelected: "Nta bicuruzwa byahiswemo",
+          total: "Igiteranyo",
+          saleSaved: "Igurisha ryabitswe!",
+          saveSale: "Bika igurisha",
+          customer: "Umukiriya",
+          phone: "Telefoni",
+          owed: "Umwenda",
+          repay: "Kwishyura",
+          recordRepayment: "Andika kwishyura",
+          amount: "Umubare",
+          repaymentRecorded: "Kwishyura kwabitswe",
+          description: "Ibisobanuro",
+          addExpense: "Ongeramo ikiguzi",
+          editExpense: "Hindura ikiguzi",
+          invalidInput: "Ibyinjijwe ntibikwiye",
+          expenseSaved: "Ikiguzi cyabitswe",
+          expenseDeleted: "Ikiguzi cyasibwe",
+          today: "Uyu munsi",
+          last7Days: "Iminsi 7 ishize",
+          thisMonth: "Uku kwezi",
+          anonymous: "Utazwi",
+          exportSuccess: "Amakuru yoherejwe",
+          importSuccess: "Amakuru yinjijwe neza",
+          importError: "Byanze: dosiye si yo",
+          noDebts: "Nta myenda ihari.",
+          noExpenses: "Nta mafaranga yasohotse.",
+          noProducts: "Nta bicuruzwa bibonetse.",
+          noSalesYet: "Nta gurisha riraba muri iki gihe."
+        }
+      };
+
+      // ----- State & Storage -----
+      const STORAGE_KEY = "iduka_data";
+      const LANG_KEY = "idu_lang";
+
+      const getDefaultData = () => ({
+        products: [
+          { id: 1, name: "Milk", price: 1200, stock: 20 },
+          { id: 2, name: "Primus", price: 500, stock: 30 },
+          { id: 3, name: "Sugar", price: 800, stock: 15 },
+          { id: 4, name: "Cooking Oil", price: 1500, stock: 10 },
+          { id: 5, name: "Airtime", price: 200, stock: 50 },
+          { id: 6, name: "Bread", price: 400, stock: 25 }
+        ],
+        sales: [],
+        debts: [],
+        expenses: []
+      });
+
+      function loadData() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return getDefaultData();
+          const parsed = JSON.parse(raw);
+          return {
+            products: Array.isArray(parsed.products) ? parsed.products : [],
+            sales: Array.isArray(parsed.sales) ? parsed.sales : [],
+            debts: Array.isArray(parsed.debts) ? parsed.debts : [],
+            expenses: Array.isArray(parsed.expenses) ? parsed.expenses : []
+          };
+        } catch (e) {
+          return getDefaultData();
+        }
+      }
+
+      function saveData(data) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+
+      let state = {
+        page: "home",
+        pageChanged: true,
+        lang: localStorage.getItem(LANG_KEY) || "en",
+        data: loadData(),
+        toast: "",
+        saleSuccess: false,
+        lastAddedProductId: null,
+        totalChanged: false,
+        productSearch: "",
+        productModal: null,
+        saleCart: [],
+        saleMethod: "cash",
+        saleCustomerName: "",
+        saleCustomerPhone: "",
+        repayModal: null,
+        expenseModal: null,
+        reportTab: "today",
+        importError: ""
+      };
+
+      let toastTimer = null;
+
+      function t(key) {
+        return (translations[state.lang] && translations[state.lang][key]) || translations.en[key] || key;
+      }
+
+      function formatCurrency(n) {
+        return Number(n || 0).toLocaleString() + " RWF";
+      }
+
+      function escapeHtml(str) {
+        return String(str == null ? "" : str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      }
+
+      function showToast(msg) {
+        state.toast = msg;
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          state.toast = "";
+          render();
+        }, 3000);
+      }
+
+      function toggleLanguage() {
+        state.lang = state.lang === "en" ? "rw" : "en";
+        localStorage.setItem(LANG_KEY, state.lang);
+        render();
+      }
+
+      function navigate(page) {
+        state.page = page;
+        state.pageChanged = true;
+        state.importError = "";
+        render();
+      }
+
+      // ----- SVG Icons -----
+      const icons = {
+        home: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>',
+        sales: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>',
+        products: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+        debts: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+        expenses: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+        reports: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+        settings: '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>',
+        edit: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+        trash: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>'
+      };
+
+      const navItems = [
+        { id: "home", labelKey: "home" },
+        { id: "sales", labelKey: "sales" },
+        { id: "products", labelKey: "products" },
+        { id: "debts", labelKey: "debts" },
+        { id: "expenses", labelKey: "expenses" },
+        { id: "reports", labelKey: "reports" },
+        { id: "settings", labelKey: "settings" }
+      ];
+
+      // ----- Illustrated Shopkeeper Hero & Empty States -----
+      function renderHeroIllustration() {
+        const starSvg = '<svg viewBox="0 0 24 24" fill="#facc15" stroke="#eab308" stroke-width="1"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4z"/></svg>';
+        return `
+          <div class="shopkeeper-stage">
+            <span class="hero-coin" style="top:20%;left:2%;--dur:3.4s;--delay:0s;"></span>
+            <span class="hero-coin" style="top:48%;left:0%;--dur:4.1s;--delay:0.6s;"></span>
+            <span class="hero-coin" style="top:18%;right:2%;--dur:3.8s;--delay:0.3s;"></span>
+            <span class="hero-coin" style="bottom:20%;right:2%;--dur:3.9s;--delay:0.4s;"></span>
+
+            <span class="hero-sparkle" style="bottom:27%;right:24%;--dur:2.1s;--delay:0s;width:11px;height:11px;">${starSvg}</span>
+            <span class="hero-sparkle" style="bottom:34%;right:18%;--dur:2.6s;--delay:0.7s;width:9px;height:9px;">${starSvg}</span>
+            <span class="hero-sparkle" style="bottom:22%;right:29%;--dur:2.3s;--delay:1.2s;width:10px;height:10px;">${starSvg}</span>
+
+            <div class="shopkeeper-float">
+              <img src="shopkeeper.png" alt="Iduka Shopkeeper Kiosk" width="220" height="220" loading="eager" class="shopkeeper-img" />
+            </div>
+            <div class="kiosk-shadow"></div>
+          </div>
+        `;
+      }
+
+      function renderEmptyIllustration(ctaAction, ctaLabel, message) {
+        return `
+          <div class="empty-state">
+            <svg width="88" height="76" viewBox="0 0 88 76" fill="none">
+              <ellipse cx="44" cy="68" rx="34" ry="6" fill="#dcfce7"/>
+              <rect x="20" y="20" width="48" height="42" rx="8" fill="#ffffff" stroke="#1f7a3a" stroke-width="2.5"/>
+              <path d="M20 30 L68 30" stroke="#1f7a3a" stroke-width="2.5"/>
+              <circle cx="36" cy="46" r="3" fill="#94a3b8"/>
+              <circle cx="52" cy="46" r="3" fill="#94a3b8"/>
+              <path d="M38 54 Q44 50 50 54" stroke="#94a3b8" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <p>${escapeHtml(message)}</p>
+            ${ctaAction ? `<button class="btn btn-primary" data-action="${ctaAction}">${escapeHtml(ctaLabel)}</button>` : ""}
+          </div>
+        `;
+      }
+
+      // ----- Page Renderers -----
+      function renderHome() {
+        const today = new Date().toDateString();
+        const todaysSales = state.data.sales.filter(s => new Date(s.date).toDateString() === today);
+        const totalSales = todaysSales.reduce((sum, s) => sum + Number(s.total || 0), 0);
+        const todaysExp = state.data.expenses.filter(e => new Date(e.date).toDateString() === today);
+        const totalExp = todaysExp.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+        const profit = totalSales - totalExp;
+        const totalOwed = state.data.debts.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+        const lowStock = state.data.products.filter(p => p.stock <= 5);
+
+        return `
+          <section class="hero-card">
+            <div>
+              <div class="hero-badge">
+                <img src="logo.png" alt="Iduka" />
+                <span>${t("heroBadge")}</span>
+              </div>
+              <h1 class="hero-title">${t("heroTitle")}</h1>
+              <p class="hero-subtitle">${t("heroSubtitle")}</p>
+              <button class="btn btn-orange btn-lg" data-action="go-sales">
+                ${icons.sales}
+                <span>${t("recordSale")}</span>
+              </button>
+            </div>
+            <div class="hero-illustration">
+              ${renderHeroIllustration()}
+            </div>
+          </section>
+
+          <div class="grid-2">
+            <div class="card card-hover stat-card">
+              <div class="stat-label">${t("todaySales")}</div>
+              <div class="stat-value count-up" data-target="${totalSales}">${formatCurrency(totalSales)}</div>
+            </div>
+            <div class="card card-hover stat-card">
+              <div class="stat-label">${t("todayExpenses")}</div>
+              <div class="stat-value count-up" data-target="${totalExp}">${formatCurrency(totalExp)}</div>
+            </div>
+            <div class="card card-hover stat-card">
+              <div class="stat-label">${t("todayProfit")}</div>
+              <div class="stat-value count-up" data-target="${profit}">${formatCurrency(profit)}</div>
+            </div>
+            <div class="card card-hover stat-card">
+              <div class="stat-label">${t("totalOwed")}</div>
+              <div class="stat-value count-up" data-target="${totalOwed}">${formatCurrency(totalOwed)}</div>
+            </div>
+          </div>
+
+          ${lowStock.length > 0 ? `
+            <div class="alert-warning">
+              <strong>${t("lowStockAlert")}:</strong>
+              <ul>
+                ${lowStock.map(p => `<li>${escapeHtml(p.name)} (${p.stock})</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+        `;
+      }
+
+      function renderProducts() {
+        const q = state.productSearch.toLowerCase();
+        const filtered = state.data.products.filter(p => p.name.toLowerCase().includes(q));
+
+        return `
+          <h2 class="page-title">${t("products")}</h2>
+          <div class="toolbar">
+            <input type="text" id="product-search" class="input" style="min-width:220px;flex:1;max-width:360px;" placeholder="${t("search")}" value="${escapeHtml(state.productSearch)}" />
+            <button class="btn btn-primary" data-action="open-add-product">+ ${t("addProduct")}</button>
+          </div>
+          <div class="table-wrap">
+            ${filtered.length === 0 ? renderEmptyIllustration("open-add-product", t("addProduct"), t("noProducts")) : `
+              <table>
+                <thead>
+                  <tr>
+                    <th>${t("name")}</th>
+                    <th>${t("price")}</th>
+                    <th>${t("stock")}</th>
+                    <th class="center">${t("actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${filtered.map(p => `
+                    <tr>
+                      <td><strong>${escapeHtml(p.name)}</strong></td>
+                      <td>${formatCurrency(p.price)}</td>
+                      <td>
+                        ${p.stock}
+                        ${p.stock === 0 ? `<span class="badge badge-out">${t("outOfStockBadge")}</span>` : ""}
+                        ${p.stock > 0 && p.stock <= 5 ? `<span class="badge badge-low">${t("lowStockBadge")}</span>` : ""}
+                      </td>
+                      <td class="center">
+                        <button class="icon-btn icon-btn-blue" data-action="edit-product" data-id="${p.id}" title="${t("editProduct")}">${icons.edit}</button>
+                        <button class="icon-btn icon-btn-red" data-action="delete-product" data-id="${p.id}" title="${t("deleteProduct")}">${icons.trash}</button>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+          ${state.productModal ? `
+            <div class="modal-backdrop" data-action="close-modal-backdrop">
+              <div class="modal-box">
+                <div class="modal-header">
+                  <h3>${state.productModal.mode === "edit" ? t("editProduct") : t("addProduct")}</h3>
+                  <button class="modal-close" data-action="close-modal">✕</button>
+                </div>
+                <div class="stack">
+                  <label>${t("name")}
+                    <input type="text" id="pm-name" class="input input-full" value="${escapeHtml(state.productModal.name)}" />
+                  </label>
+                  <label>${t("price")}
+                    <input type="number" id="pm-price" class="input input-full" value="${escapeHtml(state.productModal.price)}" />
+                  </label>
+                  <label>${t("stock")}
+                    <input type="number" id="pm-stock" class="input input-full" value="${escapeHtml(state.productModal.stock)}" />
+                  </label>
+                  <button class="btn btn-primary" data-action="save-product">${t("save")}</button>
+                </div>
+              </div>
+            </div>
+          ` : ""}
+        `;
+      }
+
+      function computeSaleTotal() {
+        return state.saleCart.reduce((sum, item) => {
+          const prod = state.data.products.find(p => p.id === item.productId);
+          return sum + (prod ? prod.price * item.qty : 0);
+        }, 0);
+      }
+
+      function canSaveSale() {
+        if (state.saleCart.length === 0) return false;
+        for (const item of state.saleCart) {
+          const prod = state.data.products.find(p => p.id === item.productId);
+          if (!prod || item.qty <= 0 || item.qty > prod.stock) return false;
+        }
+        if (state.saleMethod === "credit" && !state.saleCustomerName.trim()) return false;
+        return true;
+      }
+
+      function renderSales() {
+        const total = computeSaleTotal();
+        const valid = canSaveSale();
+
+        return `
+          <h2 class="page-title">${t("sales")}</h2>
+          <div class="grid-sales">
+            <div class="card scroll-box">
+              <h3 style="font-weight:700;margin-bottom:0.75rem;">${t("chooseProducts")}</h3>
+              ${state.data.products.map(p => `
+                <div class="row-between">
+                  <span>
+                    <strong>${escapeHtml(p.name)}</strong> (${formatCurrency(p.price)})
+                    ${p.stock > 0 && p.stock <= 5 ? `<span class="badge badge-low">${t("lowStockBadge")}</span>` : ""}
+                    ${p.stock === 0 ? `<span class="badge badge-out">${t("outOfStockBadge")}</span>` : ""}
+                  </span>
+                  <button class="btn btn-primary ${state.lastAddedProductId === p.id ? "btn-pop" : ""}" style="padding:0.35rem 0.85rem;" ${p.stock === 0 ? "disabled" : ""} data-action="add-to-cart" data-id="${p.id}">+</button>
+                </div>
+              `).join("")}
+            </div>
+            <div class="card">
+              <h3 style="font-weight:700;margin-bottom:0.75rem;">${t("selected")}</h3>
+              ${state.saleCart.length === 0 ? `<p style="color:var(--text-muted);padding:0.75rem 0;">${t("noProductsSelected")}</p>` : state.saleCart.map(item => {
+                const prod = state.data.products.find(p => p.id === item.productId);
+                const lineTotal = (prod ? prod.price : 0) * item.qty;
+                return `
+                  <div class="row-between ${state.lastAddedProductId === item.productId ? "cart-item-enter" : ""}">
+                    <span style="flex:1;font-weight:500;">${escapeHtml(prod ? prod.name : "")}</span>
+                    <input type="number" min="1" max="${prod ? prod.stock : 1}" value="${item.qty}" class="input" style="width:72px;" data-action="cart-qty" data-id="${item.productId}" />
+                    <span style="min-width:95px;text-align:right;font-weight:600;">${formatCurrency(lineTotal)}</span>
+                    <button class="icon-btn icon-btn-red" data-action="remove-from-cart" data-id="${item.productId}">✕</button>
+                  </div>
+                `;
+              }).join("")}
+              <div style="margin-top:1.15rem;font-weight:700;font-size:1.18rem;">
+                ${t("total")}: <span class="${state.totalChanged ? "total-pop" : ""}">${formatCurrency(total)}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:1.15rem;">
+            <div class="stack">
+              <div>
+                <label style="margin-right:0.5rem;font-weight:600;">${t("paymentMethod")}:</label>
+                <select id="sale-method" class="select">
+                  <option value="cash" ${state.saleMethod === "cash" ? "selected" : ""}>${t("cash")}</option>
+                  <option value="momo" ${state.saleMethod === "momo" ? "selected" : ""}>${t("momo")}</option>
+                  <option value="credit" ${state.saleMethod === "credit" ? "selected" : ""}>${t("credit")}</option>
+                </select>
+              </div>
+              ${state.saleMethod === "credit" ? `
+                <label>${t("customerName")}
+                  <input type="text" id="sale-cust-name" class="input input-full" value="${escapeHtml(state.saleCustomerName)}" />
+                </label>
+                <label>${t("customerPhone")}
+                  <input type="text" id="sale-cust-phone" class="input input-full" value="${escapeHtml(state.saleCustomerPhone)}" />
+                </label>
+              ` : ""}
+              <div>
+                <button id="save-sale-btn" class="btn btn-orange btn-lg" ${valid ? "" : "disabled"} data-action="save-sale">${t("saveSale")}</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      function renderDebts() {
+        const totalOwed = state.data.debts.reduce((sum, d) => sum + Number(d.amount || 0), 0);
+
+        return `
+          <h2 class="page-title">${t("debts")}</h2>
+          <div class="card card-hover" style="margin-bottom:1.15rem;">
+            <span class="stat-label">${t("totalOwed")}</span>
+            <div class="stat-value">${formatCurrency(totalOwed)}</div>
+          </div>
+          <div class="table-wrap">
+            ${state.data.debts.length === 0 ? renderEmptyIllustration("go-sales", t("recordSale"), t("noDebts")) : `
+              <table>
+                <thead>
+                  <tr>
+                    <th>${t("customer")}</th>
+                    <th>${t("phone")}</th>
+                    <th>${t("owed")}</th>
+                    <th class="center">${t("actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.data.debts.map(d => `
+                    <tr>
+                      <td><strong>${escapeHtml(d.customer && d.customer.name ? d.customer.name : t("anonymous"))}</strong></td>
+                      <td>${escapeHtml(d.customer && d.customer.phone ? d.customer.phone : "-")}</td>
+                      <td>${formatCurrency(d.amount)}</td>
+                      <td class="center">
+                        <button class="icon-btn icon-btn-green" data-action="open-repay" data-id="${d.id}">${t("repay")}</button>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+          ${state.repayModal ? `
+            <div class="modal-backdrop" data-action="close-modal-backdrop">
+              <div class="modal-box">
+                <div class="modal-header">
+                  <h3>${t("recordRepayment")}</h3>
+                  <button class="modal-close" data-action="close-modal">✕</button>
+                </div>
+                <div class="stack">
+                  <label>${t("amount")}
+                    <input type="number" id="repay-amount" class="input input-full" value="${escapeHtml(state.repayModal.amount)}" />
+                  </label>
+                  <button class="btn btn-primary" data-action="save-repay">${t("save")}</button>
+                </div>
+              </div>
+            </div>
+          ` : ""}
+        `;
+      }
+
+      function renderExpenses() {
+        const categories = ["Stock purchase", "Transport", "Rent", "Electricity", "Airtime", "Other"];
+
+        return `
+          <h2 class="page-title">${t("expenses")}</h2>
+          <div style="margin-bottom:1.15rem;">
+            <button class="btn btn-primary" data-action="open-add-expense">+ ${t("addExpense")}</button>
+          </div>
+          <div class="table-wrap">
+            ${state.data.expenses.length === 0 ? renderEmptyIllustration("open-add-expense", t("addExpense"), t("noExpenses")) : `
+              <table>
+                <thead>
+                  <tr>
+                    <th>${t("description")}</th>
+                    <th>${t("category")}</th>
+                    <th>${t("date")}</th>
+                    <th>${t("amount")}</th>
+                    <th class="center">${t("actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${state.data.expenses.map(e => `
+                    <tr>
+                      <td><strong>${escapeHtml(e.description)}</strong></td>
+                      <td>${escapeHtml(e.category)}</td>
+                      <td>${escapeHtml((e.date || "").slice(0, 10))}</td>
+                      <td>${formatCurrency(e.amount)}</td>
+                      <td class="center">
+                        <button class="icon-btn icon-btn-blue" data-action="edit-expense" data-id="${e.id}" title="${t("editExpense")}">${icons.edit}</button>
+                        <button class="icon-btn icon-btn-red" data-action="delete-expense" data-id="${e.id}" title="${t("confirmDelete")}">${icons.trash}</button>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            `}
+          </div>
+          ${state.expenseModal ? `
+            <div class="modal-backdrop" data-action="close-modal-backdrop">
+              <div class="modal-box">
+                <div class="modal-header">
+                  <h3>${state.expenseModal.mode === "edit" ? t("editExpense") : t("addExpense")}</h3>
+                  <button class="modal-close" data-action="close-modal">✕</button>
+                </div>
+                <div class="stack">
+                  <label>${t("description")}
+                    <input type="text" id="exp-desc" class="input input-full" value="${escapeHtml(state.expenseModal.description)}" />
+                  </label>
+                  <label>${t("category")}
+                    <select id="exp-cat" class="select input-full">
+                      ${categories.map(c => `<option value="${escapeHtml(c)}" ${state.expenseModal.category === c ? "selected" : ""}>${escapeHtml(c)}</option>`).join("")}
+                    </select>
+                  </label>
+                  <label>${t("date")}
+                    <input type="date" id="exp-date" class="input input-full" value="${escapeHtml(state.expenseModal.date)}" />
+                  </label>
+                  <label>${t("amount")}
+                    <input type="number" id="exp-amount" class="input input-full" value="${escapeHtml(state.expenseModal.amount)}" />
+                  </label>
+                  <button class="btn btn-primary" data-action="save-expense">${t("save")}</button>
+                </div>
+              </div>
+            </div>
+          ` : ""}
+        `;
+      }
+
+      function renderBarChartSvg(chartData) {
+        const width = Math.max(560, chartData.length * 36);
+        const height = 260;
+        const padLeft = 65;
+        const padRight = 16;
+        const padTop = 20;
+        const padBottom = 42;
+        const plotW = width - padLeft - padRight;
+        const plotH = height - padTop - padBottom;
+
+        const maxVal = Math.max(1, ...chartData.map(d => d.total));
+        const barW = Math.max(8, Math.floor((plotW / chartData.length) * 0.65));
+        const step = plotW / chartData.length;
+
+        const yTicks = [0, 0.25, 0.5, 0.75, 1];
+        const gridLines = yTicks.map(ratio => {
+          const y = padTop + plotH - ratio * plotH;
+          const val = Math.round(maxVal * ratio);
+          return `
+            <line x1="${padLeft}" y1="${y}" x2="${width - padRight}" y2="${y}" stroke="#e2e8f0" stroke-width="1" />
+            <text x="${padLeft - 8}" y="${y + 4}" text-anchor="end" font-size="10" fill="#64748b">${val.toLocaleString()}</text>
+          `;
+        }).join("");
+
+        const bars = chartData.map((d, idx) => {
+          const barH = (d.total / maxVal) * plotH;
+          const x = padLeft + idx * step + (step - barW) / 2;
+          const y = padTop + plotH - barH;
+          const showLabel = chartData.length <= 12 || idx % 3 === 0;
+          return `
+            <g class="chart-bar" data-label="${escapeHtml(d.label)}" data-value="${d.total}">
+              <rect class="chart-bar-rect" style="animation-delay:${idx * 18}ms" x="${x}" y="${y}" width="${barW}" height="${Math.max(3, barH)}" rx="4" fill="#1f7a3a" />
+              ${showLabel ? `<text x="${x + barW / 2}" y="${height - 14}" text-anchor="middle" font-size="10" fill="#475569">${escapeHtml(d.label)}</text>` : ""}
+            </g>
+          `;
+        }).join("");
+
+        return `
+          <div class="chart-container">
+            <svg viewBox="0 0 ${width} ${height}" style="width:100%;min-width:${width}px;height:260px;">
+              ${gridLines}
+              ${bars}
+            </svg>
+          </div>
+        `;
+      }
+
+      function renderReports() {
+        const now = new Date();
+        const startDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startWeek = new Date(startDay);
+        startWeek.setDate(startDay.getDate() - 6);
+        const startMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+        const fromDate = state.reportTab === "today" ? startDay : state.reportTab === "week" ? startWeek : startMonth;
+        const sales = state.data.sales.filter(s => new Date(s.date) >= fromDate);
+        const totalSales = sales.reduce((a, s) => a + Number(s.total || 0), 0);
+        const cash = sales.filter(s => s.method === "cash").reduce((a, s) => a + Number(s.total || 0), 0);
+        const momo = sales.filter(s => s.method === "momo").reduce((a, s) => a + Number(s.total || 0), 0);
+        const credit = sales.filter(s => s.method === "credit").reduce((a, s) => a + Number(s.total || 0), 0);
+        const totalExpenses = state.data.expenses
+          .filter(e => new Date(e.date) >= fromDate)
+          .reduce((a, e) => a + Number(e.amount || 0), 0);
+        const totalDebtRepay = state.data.debts.reduce((a, d) => a + Number(d.repaid || 0), 0);
+        const profit = cash + momo + totalDebtRepay - totalExpenses;
+
+        const prodCounts = {};
+        sales.forEach(s => {
+          (s.items || []).forEach(it => {
+            prodCounts[it.productId] = (prodCounts[it.productId] || 0) + it.qty;
+          });
+        });
+        const topProducts = Object.entries(prodCounts)
+          .map(([id, qty]) => {
+            const p = state.data.products.find(x => x.id === Number(id));
+            return { name: p ? p.name : "#" + id, qty };
+          })
+          .sort((a, b) => b.qty - a.qty)
+          .slice(0, 5);
+
+        let chartData = [];
+        if (state.reportTab === "today") {
+          chartData = Array.from({ length: 24 }, (_, h) => ({
+            label: `${h}:00`,
+            total: sales.filter(s => new Date(s.date).getHours() === h).reduce((a, s) => a + Number(s.total || 0), 0)
+          }));
+        } else {
+          for (let d = new Date(fromDate); d <= now; d.setDate(d.getDate() + 1)) {
+            const key = d.toISOString().slice(0, 10);
+            const tot = sales.filter(s => (s.date || "").slice(0, 10) === key).reduce((a, s) => a + Number(s.total || 0), 0);
+            chartData.push({ label: key.slice(5), total: tot });
+          }
+        }
+
+        return `
+          <h2 class="page-title">${t("reports")}</h2>
+          <div class="tabs">
+            <button class="btn ${state.reportTab === "today" ? "btn-primary" : "btn-secondary"}" data-action="report-tab" data-tab="today">${t("today")}</button>
+            <button class="btn ${state.reportTab === "week" ? "btn-primary" : "btn-secondary"}" data-action="report-tab" data-tab="week">${t("last7Days")}</button>
+            <button class="btn ${state.reportTab === "month" ? "btn-primary" : "btn-secondary"}" data-action="report-tab" data-tab="month">${t("thisMonth")}</button>
+          </div>
+          <div class="grid-2">
+            <div class="card card-hover stat-card"><div class="stat-label">${t("totalSales")}</div><div class="stat-value count-up" data-target="${totalSales}">${formatCurrency(totalSales)}</div></div>
+            <div class="card card-hover stat-card"><div class="stat-label">${t("cash")}</div><div class="stat-value count-up" data-target="${cash}">${formatCurrency(cash)}</div></div>
+            <div class="card card-hover stat-card"><div class="stat-label">${t("momo")}</div><div class="stat-value count-up" data-target="${momo}">${formatCurrency(momo)}</div></div>
+            <div class="card card-hover stat-card"><div class="stat-label">${t("credit")}</div><div class="stat-value count-up" data-target="${credit}">${formatCurrency(credit)}</div></div>
+            <div class="card card-hover stat-card"><div class="stat-label">${t("totalExpenses")}</div><div class="stat-value count-up" data-target="${totalExpenses}">${formatCurrency(totalExpenses)}</div></div>
+            <div class="card card-hover stat-card"><div class="stat-label">${t("profit")}</div><div class="stat-value count-up" data-target="${profit}">${formatCurrency(profit)}</div></div>
+          </div>
+
+          <h3 class="section-title">${t("topProducts")}</h3>
+          <div class="card">
+            ${topProducts.length === 0 ? `<p style="color:var(--text-muted);">${t("noSalesYet")}</p>` : `
+              <ul style="padding-left:1.25rem;">
+                ${topProducts.map(p => `<li><strong>${escapeHtml(p.name)}</strong>: ${p.qty}</li>`).join("")}
+              </ul>
+            `}
+          </div>
+
+          <h3 class="section-title">${state.reportTab === "today" ? t("salesPerHour") : t("salesPerDay")}</h3>
+          ${renderBarChartSvg(chartData)}
+        `;
+      }
+
+      function renderSettings() {
+        return `
+          <h2 class="page-title">${t("settings")}</h2>
+          <div class="card stack" style="max-width:480px;">
+            <button class="btn btn-primary" data-action="toggle-lang">${t("language")}: ${state.lang.toUpperCase()}</button>
+            <button class="btn btn-primary" data-action="export-json">${t("exportData")} (JSON)</button>
+            <button class="btn btn-primary" data-action="export-csv">${t("exportData")} (CSV)</button>
+            <label style="display:flex;flex-direction:column;gap:0.35rem;font-weight:500;">
+              <span>${t("importData")}</span>
+              <input type="file" id="import-file" accept="application/json,.json" class="input" />
+            </label>
+            ${state.importError ? `<p class="text-red">${escapeHtml(state.importError)}</p>` : ""}
+            <button class="btn btn-yellow" data-action="load-sample">${t("loadSample")}</button>
+            <button class="btn btn-danger" data-action="clear-all">${t("clearData")}</button>
+          </div>
+        `;
+      }
+
+      function renderPage() {
+        switch (state.page) {
+          case "sales": return renderSales();
+          case "products": return renderProducts();
+          case "debts": return renderDebts();
+          case "expenses": return renderExpenses();
+          case "reports": return renderReports();
+          case "settings": return renderSettings();
+          default: return renderHome();
+        }
+      }
+
+      function renderSuccessOverlay() {
+        if (!state.saleSuccess) return "";
+        const colors = ["#22c55e", "#facc15", "#f97316", "#38bdf8", "#a855f7"];
+        const pieces = Array.from({ length: 18 }, (_, i) => {
+          const angle = (i / 18) * Math.PI * 2;
+          const dist = 70 + (i % 3) * 28;
+          const tx = Math.round(Math.cos(angle) * dist) + "px";
+          const ty = Math.round(Math.sin(angle) * dist) + "px";
+          const rot = ((i * 47) % 360) + "deg";
+          return `<span class="confetti-piece" style="left:50%;top:42%;background:${colors[i % colors.length]};--tx:${tx};--ty:${ty};--rot:${rot};"></span>`;
+        }).join("");
+
+        return `
+          <div class="success-overlay">
+            <div class="success-card">
+              ${pieces}
+              <div class="success-check">
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+              <h3 class="font-heading" style="font-size:1.3rem;">${t("saleSaved")}</h3>
+            </div>
+          </div>
+        `;
+      }
+
+      function animateCountUps() {
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        document.querySelectorAll(".count-up").forEach(el => {
+          const target = Number(el.dataset.target || 0);
+          if (target === 0) {
+            el.textContent = formatCurrency(0);
+            return;
+          }
+          const duration = 450;
+          const start = performance.now();
+          function step(now) {
+            const p = Math.min(1, (now - start) / duration);
+            const eased = 1 - Math.pow(1 - p, 3);
+            el.textContent = formatCurrency(Math.round(target * eased));
+            if (p < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+        });
+      }
+
+      function updateSidebarIndicator() {
+        const activeBtn = document.querySelector(".sidebar .nav-btn.active");
+        const indicator = document.getElementById("sidebar-indicator");
+        if (activeBtn && indicator) {
+          indicator.style.transform = `translateY(${activeBtn.offsetTop}px)`;
+          indicator.style.height = `${activeBtn.offsetHeight}px`;
+        }
+      }
+
+      function render() {
+        const root = document.getElementById("app");
+        const animateClass = state.pageChanged ? "page-enter" : "";
+
+        root.innerHTML = `
+          <header class="mobile-header">
+            <div class="mobile-brand">
+              <img src="logo.png" alt="Iduka" class="mobile-logo" />
+              <h1>Iduka</h1>
+            </div>
+            <button class="mobile-lang-btn" data-action="toggle-lang">${state.lang.toUpperCase()}</button>
+          </header>
+          <div class="app-shell">
+            <aside class="sidebar">
+              <div class="sidebar-brand">
+                <img src="logo.png" alt="Iduka" class="sidebar-logo" />
+                <div class="sidebar-title">Iduka</div>
+              </div>
+              <div class="nav-list">
+                <div id="sidebar-indicator" class="sidebar-indicator"></div>
+                ${navItems.map(item => `
+                  <button class="nav-btn ${state.page === item.id ? "active" : ""}" data-action="nav" data-page="${item.id}">
+                    ${icons[item.id]}
+                    <span>${t(item.labelKey)}</span>
+                  </button>
+                `).join("")}
+              </div>
+              <button class="lang-btn" data-action="toggle-lang">${t("language")}: ${state.lang.toUpperCase()}</button>
+            </aside>
+            <main class="main-content ${animateClass}">
+              ${renderPage()}
+            </main>
+          </div>
+          <nav class="bottom-nav">
+            ${navItems.map(item => `
+              <button class="bottom-nav-btn ${state.page === item.id ? "active" : ""}" data-action="nav" data-page="${item.id}">
+                ${icons[item.id]}
+                <span>${t(item.labelKey)}</span>
+              </button>
+            `).join("")}
+          </nav>
+          ${state.toast ? `
+            <div class="toast">
+              <span>${escapeHtml(state.toast)}</span>
+              <button style="background:transparent;color:#fff;" data-action="close-toast">✕</button>
+            </div>
+          ` : ""}
+          ${renderSuccessOverlay()}
+        `;
+
+        if (state.pageChanged) {
+          animateCountUps();
+        }
+        state.pageChanged = false;
+        state.lastAddedProductId = null;
+        state.totalChanged = false;
+
+        requestAnimationFrame(updateSidebarIndicator);
+        bindEvents();
+      }
+
+      // ----- Event Handling -----
+      function bindEvents() {
+        const app = document.getElementById("app");
+
+        app.onclick = (e) => {
+          const btn = e.target.closest("[data-action]");
+          if (!btn) return;
+          const action = btn.dataset.action;
+
+          if (action === "nav") {
+            navigate(btn.dataset.page);
+          } else if (action === "go-sales") {
+            navigate("sales");
+          } else if (action === "toggle-lang") {
+            toggleLanguage();
+          } else if (action === "close-toast") {
+            state.toast = "";
+            render();
+          } else if (action === "close-modal") {
+            state.productModal = null;
+            state.repayModal = null;
+            state.expenseModal = null;
+            render();
+          } else if (action === "close-modal-backdrop") {
+            if (e.target === btn) {
+              state.productModal = null;
+              state.repayModal = null;
+              state.expenseModal = null;
+              render();
+            }
+          } else if (action === "open-add-product") {
+            state.productModal = { mode: "add", id: null, name: "", price: "", stock: "" };
+            render();
+          } else if (action === "edit-product") {
+            const p = state.data.products.find(x => x.id === Number(btn.dataset.id));
+            if (p) {
+              state.productModal = { mode: "edit", id: p.id, name: p.name, price: p.price, stock: p.stock };
+              render();
+            }
+          } else if (action === "save-product") {
+            const name = document.getElementById("pm-name").value.trim();
+            const price = Number(document.getElementById("pm-price").value);
+            const stock = Number(document.getElementById("pm-stock").value);
+            if (!name || price <= 0 || stock < 0 || Number.isNaN(price) || Number.isNaN(stock)) {
+              showToast(t("invalidInput"));
+              render();
+              return;
+            }
+            const products = [...state.data.products];
+            if (state.productModal.mode === "edit") {
+              const idx = products.findIndex(x => x.id === state.productModal.id);
+              if (idx >= 0) products[idx] = { ...products[idx], name, price, stock };
+            } else {
+              products.push({ id: Date.now(), name, price, stock });
+            }
+            state.data = { ...state.data, products };
+            saveData(state.data);
+            state.productModal = null;
+            showToast(t("addProduct"));
+            render();
+          } else if (action === "delete-product") {
+            if (!window.confirm(t("confirmDelete"))) return;
+            const id = Number(btn.dataset.id);
+            state.data = { ...state.data, products: state.data.products.filter(x => x.id !== id) };
+            saveData(state.data);
+            showToast(t("deleteProduct"));
+            render();
+          } else if (action === "add-to-cart") {
+            const id = Number(btn.dataset.id);
+            const prod = state.data.products.find(p => p.id === id);
+            if (!prod || prod.stock === 0) return;
+            const existing = state.saleCart.find(c => c.productId === id);
+            if (existing) {
+              if (existing.qty < prod.stock) existing.qty += 1;
+            } else {
+              state.saleCart.push({ productId: id, qty: 1 });
+            }
+            state.lastAddedProductId = id;
+            state.totalChanged = true;
+            render();
+          } else if (action === "remove-from-cart") {
+            const id = Number(btn.dataset.id);
+            state.saleCart = state.saleCart.filter(c => c.productId !== id);
+            state.totalChanged = true;
+            render();
+          } else if (action === "save-sale") {
+            if (!canSaveSale()) return;
+            const total = computeSaleTotal();
+            const sale = {
+              id: Date.now(),
+              items: state.saleCart.map(c => ({ productId: c.productId, qty: c.qty })),
+              method: state.saleMethod,
+              customer: state.saleMethod === "credit" ? { name: state.saleCustomerName.trim(), phone: state.saleCustomerPhone.trim() } : null,
+              date: new Date().toISOString(),
+              total
+            };
+            const newProducts = state.data.products.map(p => {
+              const item = state.saleCart.find(c => c.productId === p.id);
+              return item ? { ...p, stock: p.stock - item.qty } : p;
+            });
+            const newDebts = [...state.data.debts];
+            if (state.saleMethod === "credit") {
+              const cname = state.saleCustomerName.trim();
+              const cphone = state.saleCustomerPhone.trim();
+              const existing = newDebts.find(d => d.customer && d.customer.name === cname && d.customer.phone === cphone);
+              if (existing) {
+                existing.amount += total;
+                existing.salesIds = [...(existing.salesIds || []), sale.id];
+              } else {
+                newDebts.push({ id: Date.now() + 1, customer: { name: cname, phone: cphone }, amount: total, repaid: 0, salesIds: [sale.id] });
+              }
+            }
+            state.data = {
+              ...state.data,
+              products: newProducts,
+              sales: [...state.data.sales, sale],
+              debts: newDebts
+            };
+            saveData(state.data);
+            state.saleCart = [];
+            state.saleMethod = "cash";
+            state.saleCustomerName = "";
+            state.saleCustomerPhone = "";
+            state.saleSuccess = true;
+            render();
+            setTimeout(() => {
+              state.saleSuccess = false;
+              showToast(t("saleSaved"));
+              navigate("home");
+            }, 950);
+          } else if (action === "open-repay") {
+            state.repayModal = { id: Number(btn.dataset.id), amount: "" };
+            render();
+          } else if (action === "save-repay") {
+            const amt = Number(document.getElementById("repay-amount").value);
+            if (amt <= 0 || Number.isNaN(amt)) {
+              showToast(t("invalidInput"));
+              render();
+              return;
+            }
+            const newDebts = state.data.debts.map(d => {
+              if (d.id !== state.repayModal.id) return d;
+              const paid = Math.min(d.amount, amt);
+              return { ...d, amount: Math.max(0, d.amount - amt), repaid: (d.repaid || 0) + paid };
+            });
+            state.data = { ...state.data, debts: newDebts };
+            saveData(state.data);
+            state.repayModal = null;
+            showToast(t("repaymentRecorded"));
+            render();
+          } else if (action === "open-add-expense") {
+            state.expenseModal = {
+              mode: "add",
+              id: null,
+              description: "",
+              category: "Stock purchase",
+              date: new Date().toISOString().slice(0, 10),
+              amount: ""
+            };
+            render();
+          } else if (action === "edit-expense") {
+            const exp = state.data.expenses.find(x => x.id === Number(btn.dataset.id));
+            if (exp) {
+              state.expenseModal = {
+                mode: "edit",
+                id: exp.id,
+                description: exp.description,
+                category: exp.category,
+                date: (exp.date || "").slice(0, 10),
+                amount: exp.amount
+              };
+              render();
+            }
+          } else if (action === "save-expense") {
+            const description = document.getElementById("exp-desc").value.trim();
+            const category = document.getElementById("exp-cat").value;
+            const date = document.getElementById("exp-date").value;
+            const amount = Number(document.getElementById("exp-amount").value);
+            if (!description || !date || amount <= 0 || Number.isNaN(amount)) {
+              showToast(t("invalidInput"));
+              render();
+              return;
+            }
+            const expenses = [...state.data.expenses];
+            if (state.expenseModal.mode === "edit") {
+              const idx = expenses.findIndex(x => x.id === state.expenseModal.id);
+              if (idx >= 0) expenses[idx] = { ...expenses[idx], description, category, date, amount };
+            } else {
+              expenses.push({ id: Date.now(), description, category, date, amount });
+            }
+            state.data = { ...state.data, expenses };
+            saveData(state.data);
+            state.expenseModal = null;
+            showToast(t("expenseSaved"));
+            render();
+          } else if (action === "delete-expense") {
+            if (!window.confirm(t("confirmDelete"))) return;
+            const id = Number(btn.dataset.id);
+            state.data = { ...state.data, expenses: state.data.expenses.filter(x => x.id !== id) };
+            saveData(state.data);
+            showToast(t("expenseDeleted"));
+            render();
+          } else if (action === "report-tab") {
+            state.reportTab = btn.dataset.tab;
+            state.pageChanged = true;
+            render();
+          } else if (action === "export-json") {
+            const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "iduka_data.json";
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(t("exportSuccess"));
+            render();
+          } else if (action === "export-csv") {
+            const rows = [];
+            rows.push(["Products"]);
+            rows.push(["id", "name", "price", "stock"]);
+            state.data.products.forEach(p => rows.push([p.id, p.name, p.price, p.stock]));
+            rows.push([]);
+            rows.push(["Sales"]);
+            rows.push(["id", "date", "method", "total", "items"]);
+            state.data.sales.forEach(s => rows.push([s.id, s.date, s.method, s.total, JSON.stringify(s.items)]));
+            rows.push([]);
+            rows.push(["Expenses"]);
+            rows.push(["id", "date", "category", "description", "amount"]);
+            state.data.expenses.forEach(e => rows.push([e.id, e.date, e.category, e.description, e.amount]));
+            rows.push([]);
+            rows.push(["Debts"]);
+            rows.push(["id", "customerName", "customerPhone", "amount", "salesIds"]);
+            state.data.debts.forEach(d => rows.push([d.id, d.customer && d.customer.name || "", d.customer && d.customer.phone || "", d.amount, JSON.stringify(d.salesIds || [])]));
+            const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "iduka_data.csv";
+            a.click();
+            URL.revokeObjectURL(url);
+            showToast(t("exportSuccess"));
+            render();
+          } else if (action === "load-sample") {
+            state.data = getDefaultData();
+            saveData(state.data);
+            showToast(t("loadSample"));
+            render();
+          } else if (action === "clear-all") {
+            if (!window.confirm(t("confirmDelete"))) return;
+            localStorage.removeItem(STORAGE_KEY);
+            state.data = { products: [], sales: [], expenses: [], debts: [] };
+            showToast(t("clearData"));
+            render();
+          }
+        };
+
+        const searchInput = document.getElementById("product-search");
+        if (searchInput) {
+          searchInput.oninput = (e) => {
+            state.productSearch = e.target.value;
+            const pos = e.target.selectionStart;
+            render();
+            const el = document.getElementById("product-search");
+            if (el) {
+              el.focus();
+              el.setSelectionRange(pos, pos);
+            }
+          };
+        }
+
+        const saleMethodEl = document.getElementById("sale-method");
+        if (saleMethodEl) {
+          saleMethodEl.onchange = (e) => {
+            state.saleMethod = e.target.value;
+            render();
+          };
+        }
+        const saleNameEl = document.getElementById("sale-cust-name");
+        if (saleNameEl) {
+          saleNameEl.oninput = (e) => {
+            state.saleCustomerName = e.target.value;
+            const saveBtn = document.getElementById("save-sale-btn");
+            if (saveBtn) saveBtn.disabled = !canSaveSale();
+          };
+        }
+        const salePhoneEl = document.getElementById("sale-cust-phone");
+        if (salePhoneEl) {
+          salePhoneEl.oninput = (e) => {
+            state.saleCustomerPhone = e.target.value;
+          };
+        }
+        app.querySelectorAll('[data-action="cart-qty"]').forEach(inp => {
+          inp.onchange = (e) => {
+            const id = Number(inp.dataset.id);
+            const qty = Math.max(1, Number(e.target.value) || 1);
+            const item = state.saleCart.find(c => c.productId === id);
+            if (item) item.qty = qty;
+            state.totalChanged = true;
+            render();
+          };
+        });
+
+        const importInput = document.getElementById("import-file");
+        if (importInput) {
+          importInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+              try {
+                const obj = JSON.parse(ev.target.result);
+                if (!obj || typeof obj !== "object") throw new Error("Invalid");
+                state.data = {
+                  products: Array.isArray(obj.products) ? obj.products : [],
+                  sales: Array.isArray(obj.sales) ? obj.sales : [],
+                  debts: Array.isArray(obj.debts) ? obj.debts : [],
+                  expenses: Array.isArray(obj.expenses) ? obj.expenses : []
+                };
+                saveData(state.data);
+                state.importError = "";
+                showToast(t("importSuccess"));
+                render();
+              } catch (err) {
+                state.importError = t("importError");
+                render();
+              }
+            };
+            reader.readAsText(file);
+          };
+        }
+
+        const tooltip = document.getElementById("chart-tooltip");
+        app.querySelectorAll(".chart-bar").forEach(bar => {
+          bar.onmousemove = (e) => {
+            tooltip.style.display = "block";
+            tooltip.textContent = `${bar.dataset.label}: ${formatCurrency(bar.dataset.value)}`;
+            tooltip.style.left = `${e.clientX + 12}px`;
+            tooltip.style.top = `${e.clientY - 28}px`;
+          };
+          bar.onmouseleave = () => {
+            tooltip.style.display = "none";
+          };
+        });
+      }
+
+      render();
+    })();
+  </script>
+</body>
+</html>

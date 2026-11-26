@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#1f7a3a"/>
+  <!-- Bold Storefront Awning & Base (80% fill, high contrast, no thin lines) -->
+  <path d="M84 196 L120 104 L392 104 L428 196 Z" fill="#facc15"/>
+  <path d="M84 196 C84 226 126 226 140 196 C154 226 196 226 210 196 C224 226 266 226 280 196 C294 226 336 226 350 196 C364 226 428 226 428 196 Z" fill="#facc15"/>
+  <rect x="116" y="236" width="280" height="172" rx="28" fill="#ffffff"/>
+  <rect x="204" y="294" width="104" height="114" rx="18" fill="#1f7a3a"/>
+</svg>
+
