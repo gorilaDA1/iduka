@@ -1242,6 +1242,107 @@
         transition: none !important;
       }
     }
+
+    /* Auth & Cloud Sync UI */
+    .auth-shell {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      position: relative;
+      z-index: 2;
+    }
+    .auth-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255, 255, 255, 0.94);
+      backdrop-filter: blur(12px);
+      border-radius: 1.5rem;
+      padding: 2rem 1.75rem;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+      border: 1px solid rgba(31, 122, 58, 0.14);
+    }
+    .auth-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .auth-logo {
+      height: 44px;
+      width: auto;
+      object-fit: contain;
+    }
+    .auth-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: #f1f5f9;
+      padding: 0.25rem;
+      border-radius: 0.85rem;
+      margin-bottom: 1.25rem;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 0.55rem 0.75rem;
+      border-radius: 0.65rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      background: transparent;
+    }
+    .auth-tab.active {
+      background: #ffffff;
+      color: var(--primary-dark);
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
+    }
+    .auth-error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+      border-radius: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    .auth-success {
+      background: #f0fdf4;
+      color: #166534;
+      border: 1px solid #bbf7d0;
+      border-radius: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+    .auth-link {
+      background: transparent;
+      color: var(--primary);
+      font-size: 0.88rem;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.15rem 0;
+    }
+    .cloud-spinner-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.85rem;
+      padding: 3.5rem 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .cloud-spinner {
+      width: 38px;
+      height: 38px;
+      border: 4px solid #dcfce7;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 <body>
@@ -1277,7 +1378,9 @@
   <div id="app"></div>
   <div id="chart-tooltip" class="chart-tooltip"></div>
 
-  <script>
+  <script type="module">
+    import { supabase, supabaseConfigured } from "/src/lib/supabase.js";
+
     (function () {
       "use strict";
 
@@ -1381,7 +1484,28 @@
           noDebts: "No debts recorded yet.",
           noExpenses: "No expenses recorded yet.",
           noProducts: "No products found.",
-          noSalesYet: "No sales in this period."
+          noSalesYet: "No sales in this period.",
+          login: "Log In",
+          signup: "Sign Up",
+          email: "Email",
+          password: "Password",
+          forgotPassword: "Forgot password?",
+          sendResetLink: "Send reset link",
+          backToLogin: "Back to Log In",
+          resetSent: "Password reset email sent. Check your inbox.",
+          signupConfirm: "Account created! Check your email if confirmation is required, or log in.",
+          logout: "Log out",
+          loadingData: "Loading your shop data...",
+          errWrongCreds: "Incorrect email or password.",
+          errEmailUsed: "This email is already registered.",
+          errNetwork: "No internet connection. Please check your network.",
+          errGeneric: "Something went wrong. Please try again.",
+          errPasswordMin: "Password must be at least 6 characters.",
+          errInvalidEmail: "Please enter a valid email address.",
+          errInsufficientStock: "Not enough stock available for this sale.",
+          errConfigMissing: "Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
+          migratePrompt: "Move your existing data to your account?",
+          migrateSuccess: "Existing data moved to your account!"
         },
         rw: {
           home: "Ahabanza",
@@ -1460,53 +1584,64 @@
           noDebts: "Nta myenda ihari.",
           noExpenses: "Nta mafaranga yasohotse.",
           noProducts: "Nta bicuruzwa bibonetse.",
-          noSalesYet: "Nta gurisha riraba muri iki gihe."
+          noSalesYet: "Nta gurisha riraba muri iki gihe.",
+          login: "Injira",
+          signup: "Iyandikishe",
+          email: "Imeyili",
+          password: "Ijambo ry'ibanga",
+          forgotPassword: "Wibagiwe ijambo ry'ibanga?",
+          sendResetLink: "Ohereza link yo guhindura",
+          backToLogin: "Subira ku kwinjira",
+          resetSent: "Imeyili yo guhindura ijambo ry'ibanga yoherejwe.",
+          signupConfirm: "Konti yafunguwe! Reba imeyili yawe cyangwa winjire.",
+          logout: "Sohoka",
+          loadingData: "Amakuru y'iduka ari gufungurwa...",
+          errWrongCreds: "Imeyili cyangwa ijambo ry'ibanga sibyo.",
+          errEmailUsed: "Iyi meyili isanzwe ikoreshwa.",
+          errNetwork: "Nta murongo wa interineti uhari. Ongera ugerageze.",
+          errGeneric: "Habaye ikibazo. Ongera ugerageze.",
+          errPasswordMin: "Ijambo ry'ibanga rigomba kuba nibura inyuguti 6.",
+          errInvalidEmail: "Andika imeyili ikwiye.",
+          errInsufficientStock: "Ibicuruzwa biri mu bubiko ntibihagije.",
+          errConfigMissing: "Supabase ntabwo irashyirwaho. Ongeramo VITE_SUPABASE_URL na VITE_SUPABASE_ANON_KEY.",
+          migratePrompt: "Move your existing data to your account? / Kwimura amakuru yawe asanzwe kuri konti yawe?",
+          migrateSuccess: "Amakuru yawe asanzwe yimuriwe kuri konti yawe!"
         }
       };
 
-      // ----- State & Storage -----
+      // ----- State & Cloud Storage (Supabase) -----
       const STORAGE_KEY = "iduka_data";
       const LANG_KEY = "idu_lang";
 
-      const getDefaultData = () => ({
-        products: [
-          { id: 1, name: "Milk", price: 1200, stock: 20 },
-          { id: 2, name: "Primus", price: 500, stock: 30 },
-          { id: 3, name: "Sugar", price: 800, stock: 15 },
-          { id: 4, name: "Cooking Oil", price: 1500, stock: 10 },
-          { id: 5, name: "Airtime", price: 200, stock: 50 },
-          { id: 6, name: "Bread", price: 400, stock: 25 }
-        ],
+      const getEmptyData = () => ({
+        products: [],
         sales: [],
         debts: [],
         expenses: []
       });
 
-      function loadData() {
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (!raw) return getDefaultData();
-          const parsed = JSON.parse(raw);
-          return {
-            products: Array.isArray(parsed.products) ? parsed.products : [],
-            sales: Array.isArray(parsed.sales) ? parsed.sales : [],
-            debts: Array.isArray(parsed.debts) ? parsed.debts : [],
-            expenses: Array.isArray(parsed.expenses) ? parsed.expenses : []
-          };
-        } catch (e) {
-          return getDefaultData();
-        }
-      }
-
-      function saveData(data) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
+      const getSampleProducts = () => [
+        { name: "Milk", price: 1200, stock: 20 },
+        { name: "Primus", price: 500, stock: 30 },
+        { name: "Sugar", price: 800, stock: 15 },
+        { name: "Cooking Oil", price: 1500, stock: 10 },
+        { name: "Airtime", price: 200, stock: 50 },
+        { name: "Bread", price: 400, stock: 25 }
+      ];
 
       let state = {
         page: "home",
         pageChanged: true,
         lang: localStorage.getItem(LANG_KEY) || "en",
-        data: loadData(),
+        authReady: false,
+        user: null,
+        authMode: "login",
+        authEmail: "",
+        authError: "",
+        authMessage: "",
+        authSubmitting: false,
+        dataLoading: false,
+        data: getEmptyData(),
         toast: "",
         saleSuccess: false,
         lastAddedProductId: null,
@@ -1522,6 +1657,201 @@
         reportTab: "today",
         importError: ""
       };
+
+      function mapFriendlyError(err) {
+        if (!navigator.onLine) return t("errNetwork");
+        const msg = String((err && (err.message || err.error_description || err)) || "").toLowerCase();
+        if (msg.includes("failed to fetch") || msg.includes("network")) return t("errNetwork");
+        if (msg.includes("invalid login credentials") || msg.includes("invalid_credentials")) return t("errWrongCreds");
+        if (msg.includes("already registered") || msg.includes("already exists") || msg.includes("user_already_exists")) return t("errEmailUsed");
+        if (msg.includes("password") && msg.includes("6")) return t("errPasswordMin");
+        if (msg.includes("invalid email") || msg.includes("unable to validate email")) return t("errInvalidEmail");
+        if (msg.includes("insufficient_stock")) return t("errInsufficientStock");
+        return t("errGeneric");
+      }
+
+      async function fetchAllData(silent = false) {
+        if (!supabase || !state.user) return;
+        if (!silent) {
+          state.dataLoading = true;
+          render();
+        }
+        try {
+          const uid = state.user.id;
+          const [prodRes, salesRes, debtsRes, expRes] = await Promise.all([
+            supabase.from("products").select("*").eq("user_id", uid).order("created_at", { ascending: true }),
+            supabase.from("sales").select("*, sale_items(*)").eq("user_id", uid).order("created_at", { ascending: true }),
+            supabase.from("debts").select("*").eq("user_id", uid).order("created_at", { ascending: true }),
+            supabase.from("expenses").select("*").eq("user_id", uid).order("date", { ascending: false })
+          ]);
+          if (prodRes.error) throw prodRes.error;
+          if (salesRes.error) throw salesRes.error;
+          if (debtsRes.error) throw debtsRes.error;
+          if (expRes.error) throw expRes.error;
+
+          state.data = {
+            products: (prodRes.data || []).map(p => ({
+              id: p.id,
+              name: p.name,
+              price: Number(p.price),
+              cost: p.cost != null ? Number(p.cost) : null,
+              stock: Number(p.stock)
+            })),
+            sales: (salesRes.data || []).map(s => ({
+              id: s.id,
+              date: s.created_at,
+              method: s.payment_method === "debt" ? "credit" : s.payment_method,
+              total: Number(s.total),
+              customer: s.customer_name ? { name: s.customer_name, phone: "" } : null,
+              items: (s.sale_items || []).map(i => ({
+                productId: i.product_id,
+                productName: i.product_name,
+                qty: Number(i.quantity),
+                unitPrice: Number(i.unit_price)
+              }))
+            })),
+            debts: (debtsRes.data || []).filter(d => d.status !== "paid" && (d.amount - (d.paid || 0)) > 0).map(d => ({
+              id: d.id,
+              customer: { name: d.customer_name, phone: d.note || "" },
+              amount: Math.max(0, Number(d.amount) - Number(d.paid || 0)),
+              totalAmount: Number(d.amount),
+              repaid: Number(d.paid || 0),
+              note: d.note || "",
+              due_date: d.due_date || null,
+              status: d.status || "unpaid"
+            })),
+            expenses: (expRes.data || []).map(e => ({
+              id: e.id,
+              description: e.description,
+              category: e.category,
+              date: e.date,
+              amount: Number(e.amount)
+            }))
+          };
+        } catch (err) {
+          showToast(mapFriendlyError(err));
+        } finally {
+          state.dataLoading = false;
+          render();
+        }
+      }
+
+      async function importObjectsToSupabase(obj) {
+        if (!supabase || !state.user) return;
+        const uid = state.user.id;
+        const oldToNewProductId = {};
+
+        const prods = Array.isArray(obj.products) ? obj.products : [];
+        if (prods.length > 0) {
+          const { data: insertedProds, error: pErr } = await supabase
+            .from("products")
+            .insert(prods.map(p => ({
+              user_id: uid,
+              name: String(p.name || "Item"),
+              price: Math.max(0, Math.round(Number(p.price) || 0)),
+              cost: p.cost != null ? Math.max(0, Math.round(Number(p.cost) || 0)) : null,
+              stock: Math.max(0, Math.round(Number(p.stock) || 0))
+            })))
+            .select();
+          if (pErr) throw pErr;
+          (insertedProds || []).forEach((np, idx) => {
+            if (prods[idx] && prods[idx].id != null) {
+              oldToNewProductId[String(prods[idx].id)] = np.id;
+            }
+          });
+        }
+
+        const sales = Array.isArray(obj.sales) ? obj.sales : [];
+        for (const s of sales) {
+          const method = s.method === "credit" || s.method === "debt" ? "debt" : (s.method === "momo" ? "momo" : "cash");
+          const { data: newSale, error: sErr } = await supabase
+            .from("sales")
+            .insert({
+              user_id: uid,
+              created_at: s.date || new Date().toISOString(),
+              total: Math.max(0, Math.round(Number(s.total) || 0)),
+              payment_method: method,
+              customer_name: s.customer && s.customer.name ? String(s.customer.name) : null
+            })
+            .select()
+            .single();
+          if (sErr) throw sErr;
+          const items = Array.isArray(s.items) ? s.items : [];
+          if (items.length > 0) {
+            const { error: siErr } = await supabase.from("sale_items").insert(items.map(it => {
+              const mappedProdId = oldToNewProductId[String(it.productId)] || null;
+              const matchedOldProd = prods.find(p => String(p.id) === String(it.productId));
+              return {
+                user_id: uid,
+                sale_id: newSale.id,
+                product_id: mappedProdId,
+                product_name: it.productName || (matchedOldProd ? matchedOldProd.name : "Item"),
+                quantity: Math.max(1, Math.round(Number(it.qty) || 1)),
+                unit_price: Math.max(0, Math.round(Number(it.unitPrice) || (matchedOldProd ? matchedOldProd.price : 0)))
+              };
+            }));
+            if (siErr) throw siErr;
+          }
+        }
+
+        const debts = Array.isArray(obj.debts) ? obj.debts : [];
+        if (debts.length > 0) {
+          const { error: dErr } = await supabase.from("debts").insert(debts.map(d => {
+            const rem = Math.max(0, Math.round(Number(d.amount) || 0));
+            const rep = Math.max(0, Math.round(Number(d.repaid) || 0));
+            const totalAmt = d.totalAmount != null ? Math.max(0, Math.round(Number(d.totalAmount))) : (rem + rep);
+            return {
+              user_id: uid,
+              customer_name: (d.customer && d.customer.name) ? String(d.customer.name) : (d.customer_name || "Customer"),
+              amount: totalAmt,
+              paid: rep,
+              note: (d.customer && d.customer.phone) ? String(d.customer.phone) : (d.note || null),
+              due_date: d.due_date || null,
+              status: rem === 0 && totalAmt > 0 ? "paid" : (rep > 0 ? "partial" : "unpaid")
+            };
+          }));
+          if (dErr) throw dErr;
+        }
+
+        const expenses = Array.isArray(obj.expenses) ? obj.expenses : [];
+        if (expenses.length > 0) {
+          const { error: eErr } = await supabase.from("expenses").insert(expenses.map(e => ({
+            user_id: uid,
+            description: String(e.description || "Expense"),
+            category: String(e.category || "Other"),
+            amount: Math.max(0, Math.round(Number(e.amount) || 0)),
+            date: (e.date || new Date().toISOString()).slice(0, 10)
+          })));
+          if (eErr) throw eErr;
+        }
+      }
+
+      async function migrateLocalStorageIfNeeded() {
+        if (!state.user) return;
+        const dismissedKey = "iduka_migrated_" + state.user.id;
+        if (localStorage.getItem(dismissedKey)) return;
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        try {
+          const parsed = JSON.parse(raw);
+          const hasData = (parsed.products && parsed.products.length) ||
+                          (parsed.sales && parsed.sales.length) ||
+                          (parsed.debts && parsed.debts.length) ||
+                          (parsed.expenses && parsed.expenses.length);
+          if (!hasData) return;
+          if (window.confirm(t("migratePrompt"))) {
+            await importObjectsToSupabase(parsed);
+            localStorage.removeItem(STORAGE_KEY);
+            localStorage.setItem(dismissedKey, "1");
+            showToast(t("migrateSuccess"));
+            await fetchAllData(true);
+          } else {
+            localStorage.setItem(dismissedKey, "1");
+          }
+        } catch (err) {
+          showToast(mapFriendlyError(err));
+        }
+      }
 
       let toastTimer = null;
 
@@ -2094,6 +2424,61 @@
             ${state.importError ? `<p class="text-red">${escapeHtml(state.importError)}</p>` : ""}
             <button class="btn btn-yellow" data-action="load-sample">${t("loadSample")}</button>
             <button class="btn btn-danger" data-action="clear-all">${t("clearData")}</button>
+            <button class="btn btn-danger" data-action="logout">${t("logout")}</button>
+          </div>
+        `;
+      }
+
+      function renderAuthScreen() {
+        if (!supabaseConfigured) {
+          return `
+            <div class="auth-shell">
+              <div class="auth-card stack">
+                <div class="auth-top">
+                  <img src="${LOGO_DATA_URI}" alt="Iduka" class="auth-logo" />
+                  <button class="mobile-lang-btn" data-action="toggle-lang">${state.lang.toUpperCase()}</button>
+                </div>
+                <div class="auth-error">${escapeHtml(t("errConfigMissing"))}</div>
+              </div>
+            </div>
+          `;
+        }
+        return `
+          <div class="auth-shell">
+            <div class="auth-card">
+              <div class="auth-top">
+                <img src="${LOGO_DATA_URI}" alt="Iduka" class="auth-logo" />
+                <button class="mobile-lang-btn" data-action="toggle-lang">${state.lang.toUpperCase()}</button>
+              </div>
+              ${state.authMode !== "forgot" ? `
+                <div class="auth-tabs">
+                  <button type="button" class="auth-tab ${state.authMode === "login" ? "active" : ""}" data-action="auth-tab" data-mode="login">${t("login")}</button>
+                  <button type="button" class="auth-tab ${state.authMode === "signup" ? "active" : ""}" data-action="auth-tab" data-mode="signup">${t("signup")}</button>
+                </div>
+              ` : `<h2 style="font-size:1.25rem;font-weight:700;margin-bottom:1rem;color:var(--primary-dark);">${t("forgotPassword")}</h2>`}
+              <form id="auth-form" class="stack">
+                ${state.authError ? `<div class="auth-error">${escapeHtml(state.authError)}</div>` : ""}
+                ${state.authMessage ? `<div class="auth-success">${escapeHtml(state.authMessage)}</div>` : ""}
+                <label style="display:flex;flex-direction:column;gap:0.35rem;font-weight:600;font-size:0.9rem;">
+                  <span>${t("email")}</span>
+                  <input type="email" id="auth-email" class="input input-full" required value="${escapeHtml(state.authEmail)}" />
+                </label>
+                ${state.authMode !== "forgot" ? `
+                  <label style="display:flex;flex-direction:column;gap:0.35rem;font-weight:600;font-size:0.9rem;">
+                    <span>${t("password")}</span>
+                    <input type="password" id="auth-password" class="input input-full" required minlength="6" />
+                  </label>
+                ` : ""}
+                <button type="submit" class="btn btn-primary btn-lg" ${state.authSubmitting ? "disabled" : ""}>
+                  ${state.authSubmitting ? "..." : (state.authMode === "login" ? t("login") : (state.authMode === "signup" ? t("signup") : t("sendResetLink")))}
+                </button>
+                ${state.authMode === "login" ? `
+                  <button type="button" class="auth-link" data-action="auth-tab" data-mode="forgot">${t("forgotPassword")}</button>
+                ` : (state.authMode === "forgot" ? `
+                  <button type="button" class="auth-link" data-action="auth-tab" data-mode="login">${t("backToLogin")}</button>
+                ` : "")}
+              </form>
+            </div>
           </div>
         `;
       }
@@ -2166,6 +2551,28 @@
 
       function render() {
         const root = document.getElementById("app");
+        if (!state.authReady) {
+          root.innerHTML = `
+            <div class="auth-shell">
+              <div class="cloud-spinner-wrap">
+                <div class="cloud-spinner"></div>
+                <span>${t("loadingData")}</span>
+              </div>
+            </div>
+          `;
+          return;
+        }
+        if (!state.user) {
+          root.innerHTML = renderAuthScreen() + (state.toast ? `
+            <div class="toast">
+              <span>${escapeHtml(state.toast)}</span>
+              <button style="background:transparent;color:#fff;" data-action="close-toast">✕</button>
+            </div>
+          ` : "");
+          bindEvents();
+          return;
+        }
+
         const animateClass = state.pageChanged ? "page-enter" : "";
 
         root.innerHTML = `
@@ -2194,7 +2601,12 @@
               <button class="lang-btn" data-action="toggle-lang">${t("language")}: ${state.lang.toUpperCase()}</button>
             </aside>
             <main class="main-content ${animateClass}">
-              ${renderPage()}
+              ${state.dataLoading ? `
+                <div class="cloud-spinner-wrap">
+                  <div class="cloud-spinner"></div>
+                  <span>${t("loadingData")}</span>
+                </div>
+              ` : renderPage()}
             </main>
           </div>
           <nav class="bottom-nav">
@@ -2229,10 +2641,26 @@
       function bindEvents() {
         const app = document.getElementById("app");
 
-        app.onclick = (e) => {
+        app.onclick = async (e) => {
           const btn = e.target.closest("[data-action]");
           if (!btn) return;
           const action = btn.dataset.action;
+
+          if (action === "auth-tab") {
+            state.authMode = btn.dataset.mode;
+            state.authError = "";
+            state.authMessage = "";
+            render();
+            return;
+          } else if (action === "logout") {
+            if (supabase) await supabase.auth.signOut();
+            state.user = null;
+            state.data = getEmptyData();
+            state.saleCart = [];
+            state.page = "home";
+            render();
+            return;
+          }
 
           if (action === "nav") {
             navigate(btn.dataset.page);
@@ -2259,83 +2687,123 @@
             state.productModal = { mode: "add", id: null, name: "", price: "", stock: "" };
             render();
           } else if (action === "edit-product") {
-            const p = state.data.products.find(x => x.id === Number(btn.dataset.id));
+            const p = state.data.products.find(x => String(x.id) === String(btn.dataset.id));
             if (p) {
               state.productModal = { mode: "edit", id: p.id, name: p.name, price: p.price, stock: p.stock };
               render();
             }
           } else if (action === "save-product") {
             const name = document.getElementById("pm-name").value.trim();
-            const price = Number(document.getElementById("pm-price").value);
-            const stock = Number(document.getElementById("pm-stock").value);
+            const price = Math.round(Number(document.getElementById("pm-price").value));
+            const stock = Math.round(Number(document.getElementById("pm-stock").value));
             if (!name || price <= 0 || stock < 0 || Number.isNaN(price) || Number.isNaN(stock)) {
               showToast(t("invalidInput"));
               render();
               return;
             }
-            const products = [...state.data.products];
-            if (state.productModal.mode === "edit") {
-              const idx = products.findIndex(x => x.id === state.productModal.id);
+            const prevProducts = [...state.data.products];
+            const isEdit = state.productModal.mode === "edit";
+            const targetId = state.productModal.id;
+            const tempId = "tmp_" + Date.now();
+            const products = [...prevProducts];
+            if (isEdit) {
+              const idx = products.findIndex(x => String(x.id) === String(targetId));
               if (idx >= 0) products[idx] = { ...products[idx], name, price, stock };
             } else {
-              products.push({ id: Date.now(), name, price, stock });
+              products.push({ id: tempId, name, price, stock });
             }
             state.data = { ...state.data, products };
-            saveData(state.data);
             state.productModal = null;
             showToast(t("addProduct"));
             render();
+
+            try {
+              if (isEdit) {
+                const { error } = await supabase.from("products").update({ name, price, stock }).eq("id", targetId).eq("user_id", state.user.id);
+                if (error) throw error;
+              } else {
+                const { data: inserted, error } = await supabase.from("products").insert({ user_id: state.user.id, name, price, stock }).select().single();
+                if (error) throw error;
+                state.data = {
+                  ...state.data,
+                  products: state.data.products.map(p => p.id === tempId ? { id: inserted.id, name: inserted.name, price: Number(inserted.price), cost: inserted.cost, stock: Number(inserted.stock) } : p)
+                };
+                render();
+              }
+            } catch (err) {
+              state.data = { ...state.data, products: prevProducts };
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "delete-product") {
             if (!window.confirm(t("confirmDelete"))) return;
-            const id = Number(btn.dataset.id);
-            state.data = { ...state.data, products: state.data.products.filter(x => x.id !== id) };
-            saveData(state.data);
+            const id = String(btn.dataset.id);
+            const prevProducts = [...state.data.products];
+            state.data = { ...state.data, products: state.data.products.filter(x => String(x.id) !== id) };
             showToast(t("deleteProduct"));
             render();
+            try {
+              const { error } = await supabase.from("products").delete().eq("id", id).eq("user_id", state.user.id);
+              if (error) throw error;
+            } catch (err) {
+              state.data = { ...state.data, products: prevProducts };
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "add-to-cart") {
-            const id = Number(btn.dataset.id);
-            const prod = state.data.products.find(p => p.id === id);
+            const id = String(btn.dataset.id);
+            const prod = state.data.products.find(p => String(p.id) === id);
             if (!prod || prod.stock === 0) return;
-            const existing = state.saleCart.find(c => c.productId === id);
+            const existing = state.saleCart.find(c => String(c.productId) === id);
             if (existing) {
               if (existing.qty < prod.stock) existing.qty += 1;
             } else {
-              state.saleCart.push({ productId: id, qty: 1 });
+              state.saleCart.push({ productId: prod.id, qty: 1 });
             }
-            state.lastAddedProductId = id;
+            state.lastAddedProductId = prod.id;
             state.totalChanged = true;
             render();
           } else if (action === "remove-from-cart") {
-            const id = Number(btn.dataset.id);
-            state.saleCart = state.saleCart.filter(c => c.productId !== id);
+            const id = String(btn.dataset.id);
+            state.saleCart = state.saleCart.filter(c => String(c.productId) !== id);
             state.totalChanged = true;
             render();
           } else if (action === "save-sale") {
             if (!canSaveSale()) return;
+            const prevData = {
+              ...state.data,
+              products: state.data.products.map(p => ({ ...p })),
+              sales: [...state.data.sales],
+              debts: state.data.debts.map(d => ({ ...d }))
+            };
+            const cartSnapshot = state.saleCart.map(c => ({ productId: c.productId, qty: c.qty }));
+            const methodSnapshot = state.saleMethod;
+            const custNameSnapshot = state.saleCustomerName.trim();
+            const custPhoneSnapshot = state.saleCustomerPhone.trim();
             const total = computeSaleTotal();
+
             const sale = {
-              id: Date.now(),
-              items: state.saleCart.map(c => ({ productId: c.productId, qty: c.qty })),
-              method: state.saleMethod,
-              customer: state.saleMethod === "credit" ? { name: state.saleCustomerName.trim(), phone: state.saleCustomerPhone.trim() } : null,
+              id: "tmp_" + Date.now(),
+              items: cartSnapshot,
+              method: methodSnapshot,
+              customer: methodSnapshot === "credit" ? { name: custNameSnapshot, phone: custPhoneSnapshot } : null,
               date: new Date().toISOString(),
               total
             };
             const newProducts = state.data.products.map(p => {
-              const item = state.saleCart.find(c => c.productId === p.id);
+              const item = cartSnapshot.find(c => String(c.productId) === String(p.id));
               return item ? { ...p, stock: p.stock - item.qty } : p;
             });
             const newDebts = [...state.data.debts];
-            if (state.saleMethod === "credit") {
-              const cname = state.saleCustomerName.trim();
-              const cphone = state.saleCustomerPhone.trim();
-              const existing = newDebts.find(d => d.customer && d.customer.name === cname && d.customer.phone === cphone);
-              if (existing) {
-                existing.amount += total;
-                existing.salesIds = [...(existing.salesIds || []), sale.id];
-              } else {
-                newDebts.push({ id: Date.now() + 1, customer: { name: cname, phone: cphone }, amount: total, repaid: 0, salesIds: [sale.id] });
-              }
+            if (methodSnapshot === "credit") {
+              newDebts.push({
+                id: "tmp_debt_" + Date.now(),
+                customer: { name: custNameSnapshot, phone: custPhoneSnapshot },
+                amount: total,
+                totalAmount: total,
+                repaid: 0,
+                status: "unpaid"
+              });
             }
             state.data = {
               ...state.data,
@@ -2343,38 +2811,74 @@
               sales: [...state.data.sales, sale],
               debts: newDebts
             };
-            saveData(state.data);
             state.saleCart = [];
             state.saleMethod = "cash";
             state.saleCustomerName = "";
             state.saleCustomerPhone = "";
             state.saleSuccess = true;
             render();
-            setTimeout(() => {
+
+            try {
+              const rpcItems = cartSnapshot.map(c => ({ product_id: c.productId, quantity: c.qty }));
+              const dbMethod = methodSnapshot === "credit" ? "debt" : methodSnapshot;
+              const { error } = await supabase.rpc("record_sale", {
+                items: rpcItems,
+                payment_method: dbMethod,
+                customer_name: methodSnapshot === "credit" ? custNameSnapshot : null
+              });
+              if (error) throw error;
+              setTimeout(() => {
+                state.saleSuccess = false;
+                showToast(t("saleSaved"));
+                navigate("home");
+                fetchAllData(true);
+              }, 950);
+            } catch (err) {
               state.saleSuccess = false;
-              showToast(t("saleSaved"));
-              navigate("home");
-            }, 950);
+              state.data = prevData;
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "open-repay") {
-            state.repayModal = { id: Number(btn.dataset.id), amount: "" };
+            state.repayModal = { id: String(btn.dataset.id), amount: "" };
             render();
           } else if (action === "save-repay") {
-            const amt = Number(document.getElementById("repay-amount").value);
+            const amt = Math.round(Number(document.getElementById("repay-amount").value));
             if (amt <= 0 || Number.isNaN(amt)) {
               showToast(t("invalidInput"));
               render();
               return;
             }
-            const newDebts = state.data.debts.map(d => {
-              if (d.id !== state.repayModal.id) return d;
-              const paid = Math.min(d.amount, amt);
-              return { ...d, amount: Math.max(0, d.amount - amt), repaid: (d.repaid || 0) + paid };
-            });
+            const prevDebts = state.data.debts.map(d => ({ ...d }));
+            const targetDebt = prevDebts.find(d => String(d.id) === String(state.repayModal.id));
+            if (!targetDebt) return;
+            const paidDelta = Math.min(targetDebt.amount, amt);
+            const newPaid = (targetDebt.repaid || 0) + paidDelta;
+            const totalAmt = targetDebt.totalAmount != null ? targetDebt.totalAmount : (targetDebt.amount + (targetDebt.repaid || 0));
+            const newStatus = newPaid >= totalAmt ? "paid" : "partial";
+            const newDebts = state.data.debts
+              .map(d => {
+                if (String(d.id) !== String(state.repayModal.id)) return d;
+                return { ...d, amount: Math.max(0, d.amount - amt), repaid: newPaid, status: newStatus };
+              })
+              .filter(d => d.amount > 0);
             state.data = { ...state.data, debts: newDebts };
-            saveData(state.data);
             state.repayModal = null;
             showToast(t("repaymentRecorded"));
             render();
+
+            try {
+              const { error } = await supabase
+                .from("debts")
+                .update({ paid: newPaid, status: newStatus })
+                .eq("id", targetDebt.id)
+                .eq("user_id", state.user.id);
+              if (error) throw error;
+            } catch (err) {
+              state.data = { ...state.data, debts: prevDebts };
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "open-add-expense") {
             state.expenseModal = {
               mode: "add",
@@ -2386,7 +2890,7 @@
             };
             render();
           } else if (action === "edit-expense") {
-            const exp = state.data.expenses.find(x => x.id === Number(btn.dataset.id));
+            const exp = state.data.expenses.find(x => String(x.id) === String(btn.dataset.id));
             if (exp) {
               state.expenseModal = {
                 mode: "edit",
@@ -2402,31 +2906,61 @@
             const description = document.getElementById("exp-desc").value.trim();
             const category = document.getElementById("exp-cat").value;
             const date = document.getElementById("exp-date").value;
-            const amount = Number(document.getElementById("exp-amount").value);
+            const amount = Math.round(Number(document.getElementById("exp-amount").value));
             if (!description || !date || amount <= 0 || Number.isNaN(amount)) {
               showToast(t("invalidInput"));
               render();
               return;
             }
-            const expenses = [...state.data.expenses];
-            if (state.expenseModal.mode === "edit") {
-              const idx = expenses.findIndex(x => x.id === state.expenseModal.id);
+            const prevExpenses = [...state.data.expenses];
+            const isEdit = state.expenseModal.mode === "edit";
+            const targetId = state.expenseModal.id;
+            const tempId = "tmp_" + Date.now();
+            const expenses = [...prevExpenses];
+            if (isEdit) {
+              const idx = expenses.findIndex(x => String(x.id) === String(targetId));
               if (idx >= 0) expenses[idx] = { ...expenses[idx], description, category, date, amount };
             } else {
-              expenses.push({ id: Date.now(), description, category, date, amount });
+              expenses.unshift({ id: tempId, description, category, date, amount });
             }
             state.data = { ...state.data, expenses };
-            saveData(state.data);
             state.expenseModal = null;
             showToast(t("expenseSaved"));
             render();
+
+            try {
+              if (isEdit) {
+                const { error } = await supabase.from("expenses").update({ description, category, date, amount }).eq("id", targetId).eq("user_id", state.user.id);
+                if (error) throw error;
+              } else {
+                const { data: inserted, error } = await supabase.from("expenses").insert({ user_id: state.user.id, description, category, date, amount }).select().single();
+                if (error) throw error;
+                state.data = {
+                  ...state.data,
+                  expenses: state.data.expenses.map(ex => ex.id === tempId ? { id: inserted.id, description: inserted.description, category: inserted.category, date: inserted.date, amount: Number(inserted.amount) } : ex)
+                };
+                render();
+              }
+            } catch (err) {
+              state.data = { ...state.data, expenses: prevExpenses };
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "delete-expense") {
             if (!window.confirm(t("confirmDelete"))) return;
-            const id = Number(btn.dataset.id);
-            state.data = { ...state.data, expenses: state.data.expenses.filter(x => x.id !== id) };
-            saveData(state.data);
+            const id = String(btn.dataset.id);
+            const prevExpenses = [...state.data.expenses];
+            state.data = { ...state.data, expenses: state.data.expenses.filter(x => String(x.id) !== id) };
             showToast(t("expenseDeleted"));
             render();
+            try {
+              const { error } = await supabase.from("expenses").delete().eq("id", id).eq("user_id", state.user.id);
+              if (error) throw error;
+            } catch (err) {
+              state.data = { ...state.data, expenses: prevExpenses };
+              showToast(mapFriendlyError(err));
+              render();
+            }
           } else if (action === "report-tab") {
             state.reportTab = btn.dataset.tab;
             state.pageChanged = true;
@@ -2469,18 +3003,81 @@
             showToast(t("exportSuccess"));
             render();
           } else if (action === "load-sample") {
-            state.data = getDefaultData();
-            saveData(state.data);
-            showToast(t("loadSample"));
-            render();
+            try {
+              const { data: inserted, error } = await supabase
+                .from("products")
+                .insert(getSampleProducts().map(p => ({ ...p, user_id: state.user.id })))
+                .select();
+              if (error) throw error;
+              const mapped = (inserted || []).map(p => ({ id: p.id, name: p.name, price: Number(p.price), cost: p.cost, stock: Number(p.stock) }));
+              state.data = { ...state.data, products: [...state.data.products, ...mapped] };
+              showToast(t("loadSample"));
+              render();
+            } catch (err) {
+              showToast(mapFriendlyError(err));
+            }
           } else if (action === "clear-all") {
             if (!window.confirm(t("confirmDelete"))) return;
-            localStorage.removeItem(STORAGE_KEY);
-            state.data = { products: [], sales: [], expenses: [], debts: [] };
+            const prevData = state.data;
+            state.data = getEmptyData();
             showToast(t("clearData"));
             render();
+            try {
+              const uid = state.user.id;
+              await Promise.all([
+                supabase.from("sale_items").delete().eq("user_id", uid),
+                supabase.from("sales").delete().eq("user_id", uid),
+                supabase.from("debts").delete().eq("user_id", uid),
+                supabase.from("expenses").delete().eq("user_id", uid),
+                supabase.from("products").delete().eq("user_id", uid)
+              ]);
+            } catch (err) {
+              state.data = prevData;
+              showToast(mapFriendlyError(err));
+              render();
+            }
           }
         };
+
+        const authForm = document.getElementById("auth-form");
+        if (authForm) {
+          authForm.onsubmit = async (e) => {
+            e.preventDefault();
+            if (!supabase) return;
+            const email = document.getElementById("auth-email").value.trim();
+            const passwordEl = document.getElementById("auth-password");
+            const password = passwordEl ? passwordEl.value : "";
+            state.authEmail = email;
+            state.authError = "";
+            state.authMessage = "";
+            state.authSubmitting = true;
+            render();
+
+            try {
+              if (state.authMode === "login") {
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+              } else if (state.authMode === "signup") {
+                const { data, error } = await supabase.auth.signUp({ email, password });
+                if (error) throw error;
+                if (!data.session) {
+                  state.authMessage = t("signupConfirm");
+                }
+              } else if (state.authMode === "forgot") {
+                const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                  redirectTo: window.location.origin
+                });
+                if (error) throw error;
+                state.authMessage = t("resetSent");
+              }
+            } catch (err) {
+              state.authError = mapFriendlyError(err);
+            } finally {
+              state.authSubmitting = false;
+              render();
+            }
+          };
+        }
 
         const searchInput = document.getElementById("product-search");
         if (searchInput) {
@@ -2519,9 +3116,9 @@
         }
         app.querySelectorAll('[data-action="cart-qty"]').forEach(inp => {
           inp.onchange = (e) => {
-            const id = Number(inp.dataset.id);
+            const id = String(inp.dataset.id);
             const qty = Math.max(1, Number(e.target.value) || 1);
-            const item = state.saleCart.find(c => c.productId === id);
+            const item = state.saleCart.find(c => String(c.productId) === id);
             if (item) item.qty = qty;
             state.totalChanged = true;
             render();
@@ -2534,20 +3131,14 @@
             const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = (ev) => {
+            reader.onload = async (ev) => {
               try {
                 const obj = JSON.parse(ev.target.result);
                 if (!obj || typeof obj !== "object") throw new Error("Invalid");
-                state.data = {
-                  products: Array.isArray(obj.products) ? obj.products : [],
-                  sales: Array.isArray(obj.sales) ? obj.sales : [],
-                  debts: Array.isArray(obj.debts) ? obj.debts : [],
-                  expenses: Array.isArray(obj.expenses) ? obj.expenses : []
-                };
-                saveData(state.data);
+                await importObjectsToSupabase(obj);
                 state.importError = "";
                 showToast(t("importSuccess"));
-                render();
+                await fetchAllData(true);
               } catch (err) {
                 state.importError = t("importError");
                 render();
@@ -2571,7 +3162,45 @@
         });
       }
 
-      render();
+      async function initApp() {
+        render();
+        if (!supabaseConfigured || !supabase) {
+          state.authReady = true;
+          render();
+          return;
+        }
+        try {
+          const { data } = await supabase.auth.getSession();
+          state.user = data && data.session ? data.session.user : null;
+          state.authReady = true;
+          render();
+          if (state.user) {
+            await fetchAllData();
+            await migrateLocalStorageIfNeeded();
+          }
+          supabase.auth.onAuthStateChange(async (_event, session) => {
+            const prevUserId = state.user ? state.user.id : null;
+            const nextUser = session ? session.user : null;
+            state.user = nextUser;
+            state.authReady = true;
+            if (nextUser && nextUser.id !== prevUserId) {
+              state.authError = "";
+              state.authMessage = "";
+              await fetchAllData();
+              await migrateLocalStorageIfNeeded();
+            } else if (!nextUser) {
+              state.data = getEmptyData();
+              render();
+            }
+          });
+        } catch (err) {
+          state.authReady = true;
+          showToast(mapFriendlyError(err));
+          render();
+        }
+      }
+
+      initApp();
     })();
   </script>
 </body>
