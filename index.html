@@ -360,43 +360,72 @@
       bottom: 0;
       left: 0;
       right: 0;
+      min-height: calc(68px + env(safe-area-inset-bottom, 0px));
       background: linear-gradient(90deg, #1f7a3a 0%, #14532d 100%);
       color: #ffffff;
       display: flex;
-      justify-content: space-around;
-      padding: 0.45rem 0.25rem;
+      align-items: center;
+      padding: 6px 2px calc(6px + env(safe-area-inset-bottom, 0px));
       z-index: 40;
       border-top: 1px solid rgba(255, 255, 255, 0.15);
       box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.15);
+      overflow: hidden;
     }
 
     .bottom-nav-btn {
+      flex: 1;
+      min-width: 0;
+      min-height: 44px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 0.2rem;
+      gap: 0;
       background: transparent;
-      color: rgba(255, 255, 255, 0.85);
-      font-size: 0.68rem;
-      min-width: 48px;
-      min-height: 46px;
-      padding: 0.3rem 0.4rem;
-      border-radius: 0.65rem;
-      transition: color 0.2s, background-color 0.2s;
+      color: rgba(255, 255, 255, 0.75);
+      padding: 8px 2px;
+      border-radius: 12px;
+      transition: all 250ms ease;
+    }
+
+    .bottom-nav-btn svg {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .bottom-nav-label {
+      display: block;
+      max-width: 100%;
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      opacity: 0;
+      max-height: 0;
+      transition: all 250ms ease;
     }
 
     .bottom-nav-btn.active {
-      color: var(--accent-yellow);
-      background: rgba(255, 255, 255, 0.12);
+      flex: 2;
+      gap: 2px;
+      color: #14532d;
+      background: #facc15;
       font-weight: 700;
+    }
+
+    .bottom-nav-btn.active .bottom-nav-label {
+      opacity: 1;
+      max-height: 16px;
     }
 
     /* Main Content */
     .main-content {
       flex: 1;
       padding: 1.25rem;
-      padding-bottom: 5.5rem;
+      padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px) + 1.25rem);
       max-width: 1140px;
       width: 100%;
       margin: 0 auto;
@@ -1209,6 +1238,9 @@
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
       }
+      .bottom-nav-btn, .bottom-nav-label {
+        transition: none !important;
+      }
     }
   </style>
 </head>
@@ -1546,13 +1578,13 @@
       };
 
       const navItems = [
-        { id: "home", labelKey: "home" },
-        { id: "sales", labelKey: "sales" },
-        { id: "products", labelKey: "products" },
-        { id: "debts", labelKey: "debts" },
-        { id: "expenses", labelKey: "expenses" },
-        { id: "reports", labelKey: "reports" },
-        { id: "settings", labelKey: "settings" }
+        { id: "home", labelKey: "home", mobileLabel: { en: "Home", rw: "Ahabanza" } },
+        { id: "sales", labelKey: "sales", mobileLabel: { en: "Sales", rw: "Kugurisha" } },
+        { id: "products", labelKey: "products", mobileLabel: { en: "Products", rw: "Ibicuruzwa" } },
+        { id: "debts", labelKey: "debts", mobileLabel: { en: "Debts", rw: "Imyenda" } },
+        { id: "expenses", labelKey: "expenses", mobileLabel: { en: "Expenses", rw: "Amafaranga" } },
+        { id: "reports", labelKey: "reports", mobileLabel: { en: "Reports", rw: "Raporo" } },
+        { id: "settings", labelKey: "settings", mobileLabel: { en: "Settings", rw: "Igenamiterere" } }
       ];
 
       // ----- Illustrated Shopkeeper Hero & Empty States -----
@@ -2167,9 +2199,9 @@
           </div>
           <nav class="bottom-nav">
             ${navItems.map(item => `
-              <button class="bottom-nav-btn ${state.page === item.id ? "active" : ""}" data-action="nav" data-page="${item.id}">
+              <button class="bottom-nav-btn ${state.page === item.id ? "active" : ""}" data-action="nav" data-page="${item.id}" aria-label="${escapeHtml(t(item.labelKey))}" title="${escapeHtml(t(item.labelKey))}">
                 ${icons[item.id]}
-                <span>${t(item.labelKey)}</span>
+                <span class="bottom-nav-label">${escapeHtml(item.mobileLabel[state.lang] || t(item.labelKey))}</span>
               </button>
             `).join("")}
           </nav>
